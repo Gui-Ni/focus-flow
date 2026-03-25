@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface FocusSession {
   id: string;
@@ -19,6 +20,7 @@ export default function StatsPage() {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [period, setPeriod] = useState<"day" | "week" | "month">("week");
+  const [selectedSession, setSelectedSession] = useState<FocusSession | null>(null);
   const router = useRouter();
   const supabase = createClient();
 
@@ -138,12 +140,21 @@ export default function StatsPage() {
   const totalInspirations = getTotalInspirations();
   const filteredSessions = getFilteredSessions();
 
-  // Get last 7 days for chart
-  const last7Days = Array.from({ length: 7 }, (_, i) => {
-    const date = new Date();
-    date.setDate(date.getDate() - (6 - i));
-    return date.toLocaleDateString("zh-CN", { month: "short", day: "numeric" });
-  });
+  // Get last 7 days for chart (from Monday to Sunday)
+  const getLast7Days = () => {
+    const today = new Date();
+    const dayOfWeek = today.getDay(); // 0 = Sunday
+    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    const monday = new Date(today);
+    monday.setDate(today.getDate() + mondayOffset);
+    
+    return Array.from({ length: 7 }, (_, i) => {
+      const date = new Date(monday);
+      date.setDate(monday.getDate() + i);
+      return date.toLocaleDateString("zh-CN", { month: "short", day: "numeric" });
+    });
+  };
+  const last7Days = getLast7Days();
 
   const maxSeconds = Math.max(...Object.values(dailyStats), 1);
 
@@ -250,7 +261,8 @@ export default function StatsPage() {
             {filteredSessions.slice(0, 10).map((session) => (
               <div
                 key={session.id}
-                className="p-4 rounded-xl bg-white/5 border border-white/10"
+                className="p-4 rounded-xl bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10 transition-colors"
+                onClick={() => setSelectedSession(session)}
               >
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
@@ -278,8 +290,10 @@ export default function StatsPage() {
                       {formatTime(session.duration_seconds || session.duration_minutes * 60)}
                     </div>
                     {session.inspirations && session.inspirations.length > 0 && (
-                      <div className="text-xs text-purple-400">
-                        💡 {session.inspirations.length}条灵感
+                      <div className="text-xs text-purple-400 flex items-center gap-1 justify-end">
+                        <span>💡</span>
+                        <span>{session.inspirations.length}条灵感</span>
+                        <span>→</span>
                       </div>
                     )}
                   </div>
@@ -288,6 +302,80 @@ export default function StatsPage() {
             ))}
           </div>
         </div>
+
+        {/* Session Detail Modal */}
+        <AnimatePresence>
+          {selectedSession && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-6"
+              onClick={() => setSelectedSession(null)}
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                className="max-w-md w-full bg-[#1a1a2e] rounded-2xl p-6 border border-white/10"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-bold">
+                    {selectedSession.mode === "recharge" && "⚡ 精神充能"}
+                    {selectedSession.mode === "inspiration" && "💫 灵感触发"}
+                    {selectedSession.mode === "pomodoro" && "🍅 番茄钟"}
+                  </h2>
+                  <button
+                    onClick={() => setSelectedSession(null)}
+                    className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center hover:bg-white/20"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div className="mb-6">
+                  <div className="text-sm text-gray-400 mb-1">完成时间</div>
+                  <div>{new Date(selectedSession.completed_at).toLocaleDateString("zh-CN", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit"
+                  })}</div>
+                </div>
+
+                <div className="mb-6">
+                  <div className="text-sm text-gray-400 mb-1">专注时长</div>
+                  <div className="text-2xl font-bold">
+                    {formatTime(selectedSession.duration_seconds || selectedSession.duration_minutes * 60)}
+                  </div>
+                </div>
+
+                {selectedSession.inspirations && selectedSession.inspirations.length > 0 && (
+                  <div>
+                    <div className="text-sm text-gray-400 mb-2">💡 灵感记录</div>
+                    <div className="space-y-2">
+                      {selectedSession.inspirations.map((ins, i) => (
+                        <div key={i} className="p-3 rounded-lg bg-white/5">
+                          <div className="text-xs text-gray-500 mb-1">灵感 {i + 1}</div>
+                          <div>{ins}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {(!selectedSession.inspirations || selectedSession.inspirations.length === 0) && (
+                  <div className="text-center py-8 text-gray-400">
+                    <div className="text-4xl mb-2">💭</div>
+                    <div>本次专注没有记录灵感</div>
+                  </div>
+                )}
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Empty State */}
         {filteredSessions.length === 0 && (
