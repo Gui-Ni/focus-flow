@@ -65,11 +65,11 @@ export default function SignupPage() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2">
-            <div className="w-10 h-10 rounded-xl gradient-brand flex items-center justify-center">
-              <span className="text-xl font-bold">⚡</span>
+          <Link href="/" className="inline-flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl gradient-brand flex items-center justify-center">
+              <span className="text-2xl font-bold">⚡</span>
             </div>
-            <span className="font-bold text-xl text-white">Focus Flow</span>
+            <span className="font-bold text-2xl text-white">Focus Flow</span>
           </Link>
         </div>
 

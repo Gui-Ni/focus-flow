@@ -266,7 +266,12 @@ export default function Dashboard() {
   if (isLoading) {
     return (
       <main className="min-h-screen bg-gradient-to-br from-[#1a1a2e] to-[#16213e] flex items-center justify-center">
-        <div className="text-white text-xl">Loading...</div>
+        <div className="text-center">
+          <div className="w-16 h-16 rounded-xl gradient-brand flex items-center justify-center mx-auto mb-4">
+            <span className="text-3xl font-bold">⚡</span>
+          </div>
+          <div className="text-white">Loading...</div>
+        </div>
       </main>
     );
   }
