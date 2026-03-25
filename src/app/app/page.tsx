@@ -327,7 +327,7 @@ function InspirationNotes({ onSave }: { onSave: (note: string) => void }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="fixed bottom-6 right-6 z-40">
+    <div className="fixed bottom-6 left-6 z-40">
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -366,7 +366,7 @@ function InspirationNotes({ onSave }: { onSave: (note: string) => void }) {
       </AnimatePresence>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-14 h-14 rounded-full gradient-brand shadow-lg flex items-center justify-center text-2xl hover:scale-110 transition-transform"
+        className="w-14 h-14 rounded-full bg-white/10 hover:bg-white/20 shadow-lg flex items-center justify-center text-2xl hover:scale-110 transition-transform"
       >
         📝
       </button>
@@ -397,7 +397,7 @@ function FullscreenButton() {
   return (
     <button
       onClick={toggleFullscreen}
-      className="fixed bottom-6 left-6 z-50 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+      className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full gradient-brand shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-transform"
       title={isFullscreen ? "退出全屏" : "全屏"}
     >
       {isFullscreen ? "⊠" : "⛶"}
@@ -441,8 +441,8 @@ function SessionCompleteModal({
           {/* Stats */}
           <div className="grid grid-cols-3 gap-4 mb-6">
             <div className="text-center p-4 rounded-xl bg-white/5">
-              <div className="text-2xl font-bold text-brand-400">{actualDuration}</div>
-              <div className="text-xs text-gray-400">实际分钟</div>
+              <div className="text-2xl font-bold text-brand-400">{Math.floor(actualDuration / 60)}分{actualDuration % 60}秒</div>
+              <div className="text-xs text-gray-400">实际时长</div>
             </div>
             <div className="text-center p-4 rounded-xl bg-white/5">
               <div className="text-2xl font-bold text-green-400">{focusScore}</div>
@@ -605,6 +605,8 @@ export default function Dashboard() {
         user_id: user.id,
         mode: mode,
         duration_minutes: Math.floor(actualDuration / 60),
+        duration_seconds: actualDuration,
+        inspirations: inspirations.length > 0 ? inspirations : null,
         completed_at: new Date().toISOString(),
       });
     }

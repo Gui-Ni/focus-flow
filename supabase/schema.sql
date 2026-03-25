@@ -36,6 +36,8 @@ CREATE TABLE public.focus_sessions (
     user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
     mode focus_mode NOT NULL,
     duration_minutes INTEGER NOT NULL,
+    duration_seconds INTEGER,
+    inspirations JSONB,
     completed_at TIMESTAMPTZ DEFAULT NOW(),
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
