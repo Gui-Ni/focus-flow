@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SubscribeButton from "@/components/SubscribeButton";
 
 export default function Home() {
   return (
@@ -224,9 +225,9 @@ export default function Home() {
                 </li>
               </ul>
               
-              <button className="w-full py-3 rounded-xl border border-gray-600 hover:bg-white/5 transition-colors font-medium">
+              <Link href="/signup" className="block w-full py-3 rounded-xl border border-gray-600 hover:bg-white/5 transition-colors font-medium text-center">
                 Get Started
-              </button>
+              </Link>
             </div>
 
             {/* Pro Plan */}
@@ -266,9 +267,7 @@ export default function Home() {
                 </li>
               </ul>
               
-              <button className="w-full py-3 rounded-xl gradient-brand font-semibold hover:opacity-90 transition-opacity">
-                Start Free Trial
-              </button>
+              <SubscribeButton mode="subscribe" />
             </div>
           </div>
         </div>
