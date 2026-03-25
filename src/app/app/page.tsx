@@ -244,7 +244,18 @@ export default function Dashboard() {
     setShowModes(false);
   };
 
-  const endSession = () => {
+  const endSession = async () => {
+    // Save session to database
+    if (user) {
+      const duration = mode === "pomodoro" ? 25 : mode === "recharge" ? 10 : 5;
+      await supabase.from("focus_sessions").insert({
+        user_id: user.id,
+        mode: mode,
+        duration_minutes: duration,
+        completed_at: new Date().toISOString(),
+      });
+    }
+    
     setSessionState("ending");
     setTimeout(() => {
       setSessionState("idle");
