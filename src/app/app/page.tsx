@@ -22,7 +22,7 @@ const themes: Record<ThemeType, { bg: string; accent: string }> = {
   aurora: { bg: "from-[#1a0a2e] to-[#2e1a4a]", accent: "#E040FB" },
 };
 
-// Sound files (using free ambient sounds)
+// Sound files
 const sounds: Record<SoundType, string> = {
   none: "",
   brown: "https://assets.mixkit.co/active_storage/sfx/2515/2515-preview.mp3",
@@ -146,7 +146,7 @@ function ConfigModal({
 }
 
 // Recharge Mode - Drag orbs to center
-function RechargeMode({ onComplete }: { onComplete: () => void }) {
+function RechargeMode({ sessionDuration }: { sessionDuration: number }) {
   const [orbs, setOrbs] = useState<
     Array<{ id: number; x: number; y: number; collected: boolean }>
   >([]);
@@ -170,14 +170,19 @@ function RechargeMode({ onComplete }: { onComplete: () => void }) {
 
     setTimeout(() => {
       setOrbs((prev) => prev.filter((orb) => orb.id !== id));
-      if (orbs.length === 1) {
-        onComplete();
-      }
     }, 500);
   };
 
+  const minutes = Math.floor(sessionDuration / 60);
+  const seconds = sessionDuration % 60;
+
   return (
     <div className="relative w-full h-full flex items-center justify-center">
+      {/* Timer */}
+      <div className="absolute top-20 left-1/2 -translate-x-1/2 text-4xl font-bold">
+        {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
+      </div>
+
       <motion.div
         className="absolute w-32 h-32 rounded-full bg-gradient-to-br from-brand-400 to-brand-600"
         animate={{
@@ -207,16 +212,16 @@ function RechargeMode({ onComplete }: { onComplete: () => void }) {
       ))}
 
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/60 text-sm">
-        收集能量球: {8 - orbs.length}/8
+        已收集: {8 - orbs.length}/8
       </div>
     </div>
   );
 }
 
 // Inspiration Mode - Tap floating points
-function InspirationMode({ onComplete }: { onComplete: () => void }) {
+function InspirationMode({ sessionDuration }: { sessionDuration: number }) {
   const [points, setPoints] = useState<
-    Array<{ id: number; x: number; y: number; tapped: boolean }>
+    Array<{ id: number; x: number; y: number }>
   >([]);
   const [ripples, setRipples] = useState<
     Array<{ id: number; x: number; y: number }>
@@ -232,19 +237,12 @@ function InspirationMode({ onComplete }: { onComplete: () => void }) {
       id: Date.now() + i,
       x: Math.random() * 200 - 100,
       y: Math.random() * 200 - 100,
-      tapped: false,
     }));
     setPoints(newPoints);
   };
 
   const tapPoint = (id: number, x: number, y: number) => {
-    setTappedCount((prev) => {
-      const newCount = prev + 1;
-      if (newCount >= 6) {
-        setTimeout(onComplete, 500);
-      }
-      return newCount;
-    });
+    setTappedCount((prev) => prev + 1);
 
     const rippleId = Date.now();
     setRipples((prev) => [...prev, { id: rippleId, x, y }]);
@@ -260,14 +258,22 @@ function InspirationMode({ onComplete }: { onComplete: () => void }) {
           id: Date.now(),
           x: Math.random() * 200 - 100,
           y: Math.random() * 200 - 100,
-          tapped: false,
         },
       ]);
     }, 300);
   };
 
+  const minutes = Math.floor(sessionDuration / 60);
+  const seconds = sessionDuration % 60;
+
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
+      {/* Timer */}
+      <div className="absolute top-20 left-1/2 -translate-x-1/2 text-4xl font-bold">
+        {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
+      </div>
+
+      {/* Ripples */}
       {ripples.map((ripple) => (
         <motion.div
           key={ripple.id}
@@ -278,17 +284,15 @@ function InspirationMode({ onComplete }: { onComplete: () => void }) {
         />
       ))}
 
+      {/* Points */}
       {points.map((point) => (
         <motion.div
           key={point.id}
           className="absolute w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 cursor-pointer shadow-lg shadow-purple-500/40"
-          initial={{ x: point.x, y: point.y, scale: 0 }}
           animate={{
             x: point.x + Math.sin(Date.now() / 1000 + point.id) * 10,
             y: point.y + Math.cos(Date.now() / 1000 + point.id) * 10,
-            scale: 1,
           }}
-          transition={{ duration: 0.3 }}
           onClick={() => tapPoint(point.id, point.x, point.y)}
           whileHover={{ scale: 1.2 }}
           whileTap={{ scale: 0.8 }}
@@ -296,31 +300,14 @@ function InspirationMode({ onComplete }: { onComplete: () => void }) {
       ))}
 
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/60 text-sm">
-        触发灵感: {tappedCount}/6
+        已触发: {tappedCount} 个灵感点
       </div>
     </div>
   );
 }
 
 // Pomodoro Mode - Simple countdown
-function PomodoroMode({ duration, onComplete }: { duration: number; onComplete: () => void }) {
-  const [timeLeft, setTimeLeft] = useState(duration * 60);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          onComplete();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [onComplete, duration]);
-
+function PomodoroMode({ timeLeft }: { timeLeft: number }) {
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
 
@@ -361,7 +348,6 @@ function InspirationNotes({ onSave }: { onSave: (note: string) => void }) {
                   if (note.trim()) {
                     onSave(note);
                     setNote("");
-                    setIsOpen(false);
                   }
                 }}
                 className="flex-1 py-2 rounded-lg gradient-brand text-sm font-medium"
@@ -388,20 +374,50 @@ function InspirationNotes({ onSave }: { onSave: (note: string) => void }) {
   );
 }
 
+// Fullscreen Button
+function FullscreenButton() {
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const handleChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener("fullscreenchange", handleChange);
+    return () => document.removeEventListener("fullscreenchange", handleChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      document.documentElement.requestFullscreen();
+    }
+  };
+
+  return (
+    <button
+      onClick={toggleFullscreen}
+      className="fixed bottom-6 left-6 z-50 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+      title={isFullscreen ? "退出全屏" : "全屏"}
+    >
+      {isFullscreen ? "⊠" : "⛶"}
+    </button>
+  );
+}
+
 // Session Complete Modal
 function SessionCompleteModal({ 
   mode, 
-  duration, 
+  actualDuration, 
   inspirations,
   onClose 
 }: { 
   mode: FocusMode;
-  duration: number;
+  actualDuration: number;
   inspirations: string[];
   onClose: () => void;
 }) {
-  // Calculate a simple focus score
-  const focusScore = Math.min(100, Math.floor(duration * 4 + inspirations.length * 10));
+  const focusScore = Math.min(100, Math.floor(actualDuration / 60 * 4 + inspirations.length * 10));
 
   return (
     <motion.div
@@ -425,8 +441,8 @@ function SessionCompleteModal({
           {/* Stats */}
           <div className="grid grid-cols-3 gap-4 mb-6">
             <div className="text-center p-4 rounded-xl bg-white/5">
-              <div className="text-2xl font-bold text-brand-400">{duration}</div>
-              <div className="text-xs text-gray-400">分钟</div>
+              <div className="text-2xl font-bold text-brand-400">{actualDuration}</div>
+              <div className="text-xs text-gray-400">实际分钟</div>
             </div>
             <div className="text-center p-4 rounded-xl bg-white/5">
               <div className="text-2xl font-bold text-green-400">{focusScore}</div>
@@ -492,8 +508,14 @@ export default function Dashboard() {
   const [selectedSound, setSelectedSound] = useState<SoundType>("none");
   const [selectedTheme, setSelectedTheme] = useState<ThemeType>("default");
   const [inspirations, setInspirations] = useState<string[]>([]);
-  const [fullscreen, setFullscreen] = useState(false);
+  
+  // Session timing
+  const [sessionStartTime, setSessionStartTime] = useState<number>(0);
+  const [sessionElapsed, setSessionElapsed] = useState<number>(0);
+  const [pomodoroTimeLeft, setPomodoroTimeLeft] = useState<number>(0);
+  
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
   const router = useRouter();
   const supabase = createClient();
 
@@ -524,6 +546,33 @@ export default function Dashboard() {
     setSelectedTheme(theme);
     setSessionState("active");
     setInspirations([]);
+    
+    // Record start time
+    const now = Date.now();
+    setSessionStartTime(now);
+    setSessionElapsed(0);
+    setPomodoroTimeLeft(duration * 60);
+
+    // Start timer
+    timerRef.current = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - now) / 1000);
+      setSessionElapsed(elapsed);
+      
+      if (mode === "pomodoro") {
+        setPomodoroTimeLeft(prev => {
+          if (prev <= 1) {
+            endSession();
+            return 0;
+          }
+          return prev - 1;
+        });
+      } else {
+        // Recharge/Inspiration mode ends when duration reached
+        if (elapsed >= duration * 60) {
+          endSession();
+        }
+      }
+    }, 1000);
 
     // Play sound if selected
     if (sound !== "none" && sounds[sound]) {
@@ -532,31 +581,30 @@ export default function Dashboard() {
       audioRef.current.volume = 0.5;
       audioRef.current.play().catch(console.error);
     }
-
-    // Enter fullscreen
-    if (fullscreen && document.documentElement.requestFullscreen) {
-      document.documentElement.requestFullscreen();
-    }
   };
 
   const endSession = async () => {
+    // Stop timer
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+
     // Stop sound
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current = null;
     }
 
-    // Exit fullscreen
-    if (document.fullscreenElement) {
-      document.exitFullscreen();
-    }
+    // Calculate actual duration
+    const actualDuration = Math.floor((Date.now() - sessionStartTime) / 1000);
 
     // Save to database
     if (user) {
       await supabase.from("focus_sessions").insert({
         user_id: user.id,
         mode: mode,
-        duration_minutes: selectedDuration,
+        duration_minutes: Math.floor(actualDuration / 60),
         completed_at: new Date().toISOString(),
       });
     }
@@ -573,6 +621,18 @@ export default function Dashboard() {
   };
 
   const bgClass = themes[selectedTheme].bg;
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    };
+  }, []);
 
   if (isLoading) {
     return (
@@ -660,19 +720,6 @@ export default function Dashboard() {
                 exit={{ opacity: 0, y: -20 }}
                 className="space-y-8"
               >
-                {/* Fullscreen Toggle */}
-                <div className="flex justify-center">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={fullscreen}
-                      onChange={(e) => setFullscreen(e.target.checked)}
-                      className="w-5 h-5 rounded bg-white/10 border-white/20"
-                    />
-                    <span className="text-sm text-gray-400">全屏模式</span>
-                  </label>
-                </div>
-
                 <div className="grid md:grid-cols-3 gap-6">
                   {/* Recharge Mode */}
                   <motion.button
@@ -753,7 +800,7 @@ export default function Dashboard() {
           >
             {/* Sound Toggle */}
             {selectedSound !== "none" && (
-              <div className="absolute top-20 right-6 z-50">
+              <div className="absolute top-20 right-20 z-50">
                 <button
                   onClick={() => {
                     if (audioRef.current) {
@@ -771,6 +818,9 @@ export default function Dashboard() {
               </div>
             )}
 
+            {/* Fullscreen Button - Bottom Left */}
+            <FullscreenButton />
+
             <div className="p-6 flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
@@ -784,7 +834,7 @@ export default function Dashboard() {
                     {mode === "inspiration" && "灵感触发 · Inspiration"}
                     {mode === "pomodoro" && "番茄钟 · Pomodoro"}
                   </h2>
-                  <div className="text-sm text-gray-400">{selectedDuration} 分钟</div>
+                  <div className="text-sm text-gray-400">预设 {selectedDuration} 分钟</div>
                 </div>
               </div>
               <button
@@ -796,9 +846,9 @@ export default function Dashboard() {
             </div>
 
             <div className="flex-1 relative">
-              {mode === "recharge" && <RechargeMode onComplete={endSession} />}
-              {mode === "inspiration" && <InspirationMode onComplete={endSession} />}
-              {mode === "pomodoro" && <PomodoroMode duration={selectedDuration} onComplete={endSession} />}
+              {mode === "recharge" && <RechargeMode sessionDuration={sessionElapsed} />}
+              {mode === "inspiration" && <InspirationMode sessionDuration={sessionElapsed} />}
+              {mode === "pomodoro" && <PomodoroMode timeLeft={pomodoroTimeLeft} />}
             </div>
 
             {/* Inspiration Notes */}
@@ -812,7 +862,7 @@ export default function Dashboard() {
         {sessionState === "ending" && (
           <SessionCompleteModal
             mode={mode}
-            duration={selectedDuration}
+            actualDuration={Math.floor(sessionElapsed / 60)}
             inspirations={inspirations}
             onClose={closeSession}
           />
