@@ -12,8 +12,8 @@ export async function POST() {
       );
     }
 
-    // Create LemonSqueezy checkout URL
-    const checkoutUrl = `https://lemonsqueezy.com/checkout/buy/${variantId}`;
+    // Create LemonSqueezy checkout URL with the full UUID-based link
+    const checkoutUrl = `https://focus-flow.lemonsqueezy.com/checkout/buy/e988b18e-767a-4135-8e09-128d6fa40cf4`;
 
     return NextResponse.json({ url: checkoutUrl });
   } catch (error) {
