@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
@@ -9,7 +9,141 @@ import type { User } from "@supabase/supabase-js";
 
 // Types
 type FocusMode = "recharge" | "inspiration" | "pomodoro";
-type SessionState = "idle" | "pose-confirm" | "active" | "ending";
+type SessionState = "idle" | "config" | "active" | "ending";
+type SoundType = "none" | "brown" | "rain" | "forest" | "ocean" | "cafe";
+type ThemeType = "default" | "ocean" | "forest" | "night" | "aurora";
+
+// Theme backgrounds
+const themes: Record<ThemeType, { bg: string; accent: string }> = {
+  default: { bg: "from-[#1a1a2e] to-[#16213e]", accent: "#4FACFE" },
+  ocean: { bg: "from-[#0a1628] to-[#1a3a5c]", accent: "#00D4FF" },
+  forest: { bg: "from-[#0a1f0a] to-[#1a3a1a]", accent: "#4CAF50" },
+  night: { bg: "from-[#0a0a1a] to-[#1a1a2e]", accent: "#9C27B0" },
+  aurora: { bg: "from-[#1a0a2e] to-[#2e1a4a]", accent: "#E040FB" },
+};
+
+// Sound files (using free ambient sounds)
+const sounds: Record<SoundType, string> = {
+  none: "",
+  brown: "https://assets.mixkit.co/active_storage/sfx/2515/2515-preview.mp3",
+  rain: "https://assets.mixkit.co/active_storage/sfx/219/219-preview.mp3",
+  forest: "https://assets.mixkit.co/active_storage/sfx/2432/2432-preview.mp3",
+  ocean: "https://assets.mixkit.co/active_storage/sfx/2411/2411-preview.mp3",
+  cafe: "https://assets.mixkit.co/active_storage/sfx/857/857-preview.mp3",
+};
+
+// Config Modal
+function ConfigModal({ 
+  mode, 
+  onStart,
+  onCancel 
+}: { 
+  mode: FocusMode;
+  onStart: (duration: number, sound: SoundType, theme: ThemeType) => void;
+  onCancel: () => void;
+}) {
+  const [duration, setDuration] = useState(10);
+  const [sound, setSound] = useState<SoundType>("none");
+  const [theme, setTheme] = useState<ThemeType>("default");
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-6"
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        className="max-w-md w-full bg-[#1a1a2e] rounded-2xl p-6 border border-white/10"
+      >
+        <h2 className="text-xl font-bold mb-6 text-center">
+          {mode === "recharge" && "⚡ 精神充能"}
+          {mode === "inspiration" && "💫 灵感触发"}
+          {mode === "pomodoro" && "🍅 番茄钟"}
+        </h2>
+
+        {/* Duration */}
+        <div className="mb-6">
+          <label className="block text-sm text-gray-400 mb-3">专注时长</label>
+          <div className="flex gap-3">
+            {[5, 10, 15, 25].map((d) => (
+              <button
+                key={d}
+                onClick={() => setDuration(d)}
+                className={`flex-1 py-3 rounded-xl font-medium transition-all ${
+                  duration === d
+                    ? "gradient-brand"
+                    : "bg-white/10 hover:bg-white/20"
+                }`}
+              >
+                {d}min
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Sound */}
+        <div className="mb-6">
+          <label className="block text-sm text-gray-400 mb-3">背景音</label>
+          <div className="grid grid-cols-3 gap-2">
+            {(["none", "brown", "rain", "forest", "ocean", "cafe"] as SoundType[]).map((s) => (
+              <button
+                key={s}
+                onClick={() => setSound(s)}
+                className={`py-2 rounded-lg text-sm transition-all ${
+                  sound === s
+                    ? "bg-brand-500/30 border border-brand-500"
+                    : "bg-white/5 hover:bg-white/10 border border-transparent"
+                }`}
+              >
+                {s === "none" && "静音"}
+                {s === "brown" && "白噪音"}
+                {s === "rain" && "雨声"}
+                {s === "forest" && "森林"}
+                {s === "ocean" && "海浪"}
+                {s === "cafe" && "咖啡厅"}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Theme */}
+        <div className="mb-6">
+          <label className="block text-sm text-gray-400 mb-3">背景主题</label>
+          <div className="flex gap-3">
+            {(Object.keys(themes) as ThemeType[]).map((t) => (
+              <button
+                key={t}
+                onClick={() => setTheme(t)}
+                className={`w-12 h-12 rounded-xl transition-all ${
+                  theme === t ? "ring-2 ring-white" : ""
+                } bg-gradient-to-br ${themes[t].bg}`}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-3">
+          <button
+            onClick={onCancel}
+            className="flex-1 py-3 rounded-xl bg-white/10 hover:bg-white/20 transition-colors"
+          >
+            取消
+          </button>
+          <button
+            onClick={() => onStart(duration, sound, theme)}
+            className="flex-1 py-3 rounded-xl gradient-brand font-semibold hover:opacity-90 transition-opacity"
+          >
+            开始专注
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
 
 // Recharge Mode - Drag orbs to center
 function RechargeMode({ onComplete }: { onComplete: () => void }) {
@@ -73,7 +207,7 @@ function RechargeMode({ onComplete }: { onComplete: () => void }) {
       ))}
 
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/60 text-sm">
-        Collected: {8 - orbs.length}/8
+        收集能量球: {8 - orbs.length}/8
       </div>
     </div>
   );
@@ -162,15 +296,15 @@ function InspirationMode({ onComplete }: { onComplete: () => void }) {
       ))}
 
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/60 text-sm">
-        Inspired: {tappedCount}/6
+        触发灵感: {tappedCount}/6
       </div>
     </div>
   );
 }
 
 // Pomodoro Mode - Simple countdown
-function PomodoroMode({ onComplete }: { onComplete: () => void }) {
-  const [timeLeft, setTimeLeft] = useState(25 * 60);
+function PomodoroMode({ duration, onComplete }: { duration: number; onComplete: () => void }) {
+  const [timeLeft, setTimeLeft] = useState(duration * 60);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -185,7 +319,7 @@ function PomodoroMode({ onComplete }: { onComplete: () => void }) {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [onComplete]);
+  }, [onComplete, duration]);
 
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
@@ -195,8 +329,156 @@ function PomodoroMode({ onComplete }: { onComplete: () => void }) {
       <div className="text-8xl font-bold text-white mb-8">
         {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
       </div>
-      <div className="text-gray-400">Focus time</div>
+      <div className="text-gray-400">专注时间</div>
     </div>
+  );
+}
+
+// Inspiration Notes Component
+function InspirationNotes({ onSave }: { onSave: (note: string) => void }) {
+  const [note, setNote] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="fixed bottom-6 right-6 z-40">
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.9 }}
+            className="mb-3 w-72 bg-[#1a1a2e] rounded-xl p-4 border border-white/10"
+          >
+            <textarea
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="记录你的灵感..."
+              className="w-full h-24 bg-white/5 rounded-lg p-3 text-white placeholder-gray-500 resize-none focus:outline-none focus:ring-1 focus:ring-brand-500"
+            />
+            <div className="flex gap-2 mt-3">
+              <button
+                onClick={() => {
+                  if (note.trim()) {
+                    onSave(note);
+                    setNote("");
+                    setIsOpen(false);
+                  }
+                }}
+                className="flex-1 py-2 rounded-lg gradient-brand text-sm font-medium"
+              >
+                保存
+              </button>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="px-4 py-2 rounded-lg bg-white/10 text-sm"
+              >
+                关闭
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-14 h-14 rounded-full gradient-brand shadow-lg flex items-center justify-center text-2xl hover:scale-110 transition-transform"
+      >
+        📝
+      </button>
+    </div>
+  );
+}
+
+// Session Complete Modal
+function SessionCompleteModal({ 
+  mode, 
+  duration, 
+  inspirations,
+  onClose 
+}: { 
+  mode: FocusMode;
+  duration: number;
+  inspirations: string[];
+  onClose: () => void;
+}) {
+  // Calculate a simple focus score
+  const focusScore = Math.min(100, Math.floor(duration * 4 + inspirations.length * 10));
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-6"
+    >
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        className="max-w-md w-full"
+      >
+        {/* Data Card */}
+        <div className="bg-[#1a1a2e] rounded-2xl p-6 border border-white/10 mb-4">
+          <div className="text-center mb-6">
+            <div className="text-6xl mb-4">✨</div>
+            <h2 className="text-2xl font-bold mb-2">专注完成！</h2>
+            <p className="text-gray-400">Great work. Take a break.</p>
+          </div>
+
+          {/* Stats */}
+          <div className="grid grid-cols-3 gap-4 mb-6">
+            <div className="text-center p-4 rounded-xl bg-white/5">
+              <div className="text-2xl font-bold text-brand-400">{duration}</div>
+              <div className="text-xs text-gray-400">分钟</div>
+            </div>
+            <div className="text-center p-4 rounded-xl bg-white/5">
+              <div className="text-2xl font-bold text-green-400">{focusScore}</div>
+              <div className="text-xs text-gray-400">专注分</div>
+            </div>
+            <div className="text-center p-4 rounded-xl bg-white/5">
+              <div className="text-2xl font-bold text-purple-400">{inspirations.length}</div>
+              <div className="text-xs text-gray-400">灵感数</div>
+            </div>
+          </div>
+
+          {/* Inspirations */}
+          {inspirations.length > 0 && (
+            <div className="mb-4">
+              <div className="text-sm text-gray-400 mb-2">💡 灵感记录</div>
+              <div className="space-y-2">
+                {inspirations.map((ins, i) => (
+                  <div key={i} className="p-3 rounded-lg bg-white/5 text-sm">
+                    {ins}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Product Recommendation */}
+        <Link
+          href="/store"
+          className="block p-4 rounded-xl bg-gradient-to-r from-brand-500/20 to-purple-500/20 border border-brand-500/30 hover:border-brand-500/50 transition-colors mb-4"
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-xl bg-white/10 flex items-center justify-center text-3xl">
+              📓
+            </div>
+            <div className="flex-1">
+              <div className="text-xs text-brand-400 mb-1">为你推荐</div>
+              <div className="font-bold">Flow Journal</div>
+              <div className="text-sm text-gray-400">记录专注轨迹，激发更多灵感</div>
+            </div>
+            <div className="text-brand-400 text-xl">→</div>
+          </div>
+        </Link>
+
+        <button
+          onClick={onClose}
+          className="w-full py-3 rounded-xl bg-white/10 hover:bg-white/20 transition-colors font-medium"
+        >
+          完成
+        </button>
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -205,13 +487,17 @@ export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null);
   const [mode, setMode] = useState<FocusMode>("recharge");
   const [sessionState, setSessionState] = useState<SessionState>("idle");
-  const [showModes, setShowModes] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedDuration, setSelectedDuration] = useState(10);
+  const [selectedSound, setSelectedSound] = useState<SoundType>("none");
+  const [selectedTheme, setSelectedTheme] = useState<ThemeType>("default");
+  const [inspirations, setInspirations] = useState<string[]>([]);
+  const [fullscreen, setFullscreen] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const router = useRouter();
   const supabase = createClient();
 
   useEffect(() => {
-    // Check auth state
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
         router.push("/login");
@@ -220,17 +506,6 @@ export default function Dashboard() {
         setIsLoading(false);
       }
     });
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
-      if (!session) {
-        router.push("/login");
-      } else {
-        setUser(session.user);
-      }
-    });
-
-    return () => subscription.unsubscribe();
   }, [router, supabase]);
 
   const handleSignOut = async () => {
@@ -240,32 +515,68 @@ export default function Dashboard() {
 
   const startSession = (selectedMode: FocusMode) => {
     setMode(selectedMode);
+    setSessionState("config");
+  };
+
+  const beginSession = async (duration: number, sound: SoundType, theme: ThemeType) => {
+    setSelectedDuration(duration);
+    setSelectedSound(sound);
+    setSelectedTheme(theme);
     setSessionState("active");
-    setShowModes(false);
+    setInspirations([]);
+
+    // Play sound if selected
+    if (sound !== "none" && sounds[sound]) {
+      audioRef.current = new Audio(sounds[sound]);
+      audioRef.current.loop = true;
+      audioRef.current.volume = 0.5;
+      audioRef.current.play().catch(console.error);
+    }
+
+    // Enter fullscreen
+    if (fullscreen && document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen();
+    }
   };
 
   const endSession = async () => {
-    // Save session to database
+    // Stop sound
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+
+    // Exit fullscreen
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    }
+
+    // Save to database
     if (user) {
-      const duration = mode === "pomodoro" ? 25 : mode === "recharge" ? 10 : 5;
       await supabase.from("focus_sessions").insert({
         user_id: user.id,
         mode: mode,
-        duration_minutes: duration,
+        duration_minutes: selectedDuration,
         completed_at: new Date().toISOString(),
       });
     }
-    
+
     setSessionState("ending");
-    setTimeout(() => {
-      setSessionState("idle");
-      setShowModes(true);
-    }, 2000);
   };
+
+  const closeSession = () => {
+    setSessionState("idle");
+  };
+
+  const saveInspiration = (note: string) => {
+    setInspirations((prev) => [...prev, note]);
+  };
+
+  const bgClass = themes[selectedTheme].bg;
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-[#1a1a2e] to-[#16213e] flex items-center justify-center">
+      <main className={`min-h-screen bg-gradient-to-br ${bgClass} flex items-center justify-center`}>
         <div className="text-center">
           <div className="w-16 h-16 rounded-xl gradient-brand flex items-center justify-center mx-auto mb-4">
             <span className="text-3xl font-bold">⚡</span>
@@ -277,9 +588,12 @@ export default function Dashboard() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-[#1a1a2e] to-[#16213e] text-white">
+    <main className={`min-h-screen bg-gradient-to-br ${bgClass} text-white`}>
+      {/* Audio */}
+      <audio ref={audioRef} />
+
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 glass">
+      <header className="fixed top-0 left-0 right-0 z-30 glass">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
@@ -327,7 +641,6 @@ export default function Dashboard() {
         </div>
       </header>
 
-      {/* Main Content */}
       <div className="pt-24 pb-12 px-6">
         <div className="max-w-4xl mx-auto">
           {/* Welcome */}
@@ -335,18 +648,31 @@ export default function Dashboard() {
             <h1 className="text-2xl font-bold mb-2">
               Welcome back{user?.user_metadata?.name ? `, ${user.user_metadata.name}` : ""}!
             </h1>
-            <p className="text-gray-400">Choose a mode to start your session</p>
+            <p className="text-gray-400">选择一个模式开始专注</p>
           </div>
 
           {/* Mode Selection */}
           <AnimatePresence>
-            {showModes && (
+            {sessionState === "idle" && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 className="space-y-8"
               >
+                {/* Fullscreen Toggle */}
+                <div className="flex justify-center">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={fullscreen}
+                      onChange={(e) => setFullscreen(e.target.checked)}
+                      className="w-5 h-5 rounded bg-white/10 border-white/20"
+                    />
+                    <span className="text-sm text-gray-400">全屏模式</span>
+                  </label>
+                </div>
+
                 <div className="grid md:grid-cols-3 gap-6">
                   {/* Recharge Mode */}
                   <motion.button
@@ -359,7 +685,7 @@ export default function Dashboard() {
                       ⚡
                     </div>
                     <h3 className="text-xl font-bold mb-2">精神充能</h3>
-                    <p className="text-gray-400 text-sm mb-4">Recharge · Focus inward</p>
+                    <p className="text-gray-400 text-sm mb-4">向内收集，收束聚焦</p>
                     <span className="inline-block px-3 py-1 rounded-full text-xs bg-green-500/20 text-green-400">
                       Free
                     </span>
@@ -376,7 +702,7 @@ export default function Dashboard() {
                       💫
                     </div>
                     <h3 className="text-xl font-bold mb-2">灵感触发</h3>
-                    <p className="text-gray-400 text-sm mb-4">Inspiration · Think divergently</p>
+                    <p className="text-gray-400 text-sm mb-4">向外扩散，跳跃触发</p>
                     <span className="inline-block px-3 py-1 rounded-full text-xs bg-purple-500/20 text-purple-400">
                       Pro
                     </span>
@@ -393,7 +719,7 @@ export default function Dashboard() {
                       🍅
                     </div>
                     <h3 className="text-xl font-bold mb-2">番茄钟</h3>
-                    <p className="text-gray-400 text-sm mb-4">Classic · 25 min focus</p>
+                    <p className="text-gray-400 text-sm mb-4">经典专注，25分钟</p>
                     <span className="inline-block px-3 py-1 rounded-full text-xs bg-green-500/20 text-green-400">
                       Free
                     </span>
@@ -402,100 +728,96 @@ export default function Dashboard() {
               </motion.div>
             )}
           </AnimatePresence>
-
-          {/* Active Session */}
-          <AnimatePresence>
-            {sessionState === "active" && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="fixed inset-0 z-40 bg-gradient-to-br from-[#1a1a2e] to-[#16213e] flex flex-col"
-              >
-                <div className="p-6 flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                      {mode === "recharge" && "⚡"}
-                      {mode === "inspiration" && "💫"}
-                      {mode === "pomodoro" && "🍅"}
-                    </div>
-                    <div>
-                      <h2 className="font-bold">
-                        {mode === "recharge" && "精神充能 · Recharge"}
-                        {mode === "inspiration" && "灵感触发 · Inspiration"}
-                        {mode === "pomodoro" && "番茄钟 · Pomodoro"}
-                      </h2>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => setShowModes(true)}
-                    className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
-                  >
-                    Exit
-                  </button>
-                </div>
-
-                <div className="flex-1 relative">
-                  {mode === "recharge" && <RechargeMode onComplete={endSession} />}
-                  {mode === "inspiration" && <InspirationMode onComplete={endSession} />}
-                  {mode === "pomodoro" && <PomodoroMode onComplete={endSession} />}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Session Complete */}
-          <AnimatePresence>
-            {sessionState === "ending" && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-6"
-              >
-                <motion.div
-                  initial={{ scale: 0.8, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  className="max-w-md w-full"
-                >
-                  <div className="text-center mb-6">
-                    <div className="text-6xl mb-4">✨</div>
-                    <h2 className="text-3xl font-bold mb-2">Session Complete!</h2>
-                    <p className="text-gray-400">Great work. Take a break.</p>
-                  </div>
-
-                  {/* Product Recommendation */}
-                  <Link
-                    href="/store"
-                    className="block p-4 rounded-xl bg-gradient-to-r from-brand-500/20 to-purple-500/20 border border-brand-500/30 hover:border-brand-500/50 transition-colors mb-4"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="w-16 h-16 rounded-xl bg-white/10 flex items-center justify-center text-3xl">
-                        📓
-                      </div>
-                      <div className="flex-1 text-left">
-                        <div className="text-xs text-brand-400 mb-1">Recommended</div>
-                        <div className="font-bold">Flow Journal</div>
-                        <div className="text-sm text-gray-400">Track your focus journey</div>
-                      </div>
-                      <div className="text-brand-400">→</div>
-                    </div>
-                  </Link>
-
-                  <button
-                    onClick={() => {
-                      setSessionState("idle");
-                      setShowModes(true);
-                    }}
-                    className="w-full py-3 rounded-xl bg-white/10 hover:bg-white/20 transition-colors font-medium"
-                  >
-                    Done
-                  </button>
-                </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
       </div>
+
+      {/* Config Modal */}
+      <AnimatePresence>
+        {sessionState === "config" && (
+          <ConfigModal
+            mode={mode}
+            onStart={beginSession}
+            onCancel={() => setSessionState("idle")}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Active Session */}
+      <AnimatePresence>
+        {sessionState === "active" && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-40 bg-gradient-to-br from-[#1a1a2e] to-[#16213e] flex flex-col"
+          >
+            {/* Sound Toggle */}
+            {selectedSound !== "none" && (
+              <div className="absolute top-20 right-6 z-50">
+                <button
+                  onClick={() => {
+                    if (audioRef.current) {
+                      if (audioRef.current.paused) {
+                        audioRef.current.play();
+                      } else {
+                        audioRef.current.pause();
+                      }
+                    }
+                  }}
+                  className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+                >
+                  🔊
+                </button>
+              </div>
+            )}
+
+            <div className="p-6 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+                  {mode === "recharge" && "⚡"}
+                  {mode === "inspiration" && "💫"}
+                  {mode === "pomodoro" && "🍅"}
+                </div>
+                <div>
+                  <h2 className="font-bold">
+                    {mode === "recharge" && "精神充能 · Recharge"}
+                    {mode === "inspiration" && "灵感触发 · Inspiration"}
+                    {mode === "pomodoro" && "番茄钟 · Pomodoro"}
+                  </h2>
+                  <div className="text-sm text-gray-400">{selectedDuration} 分钟</div>
+                </div>
+              </div>
+              <button
+                onClick={endSession}
+                className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+              >
+                结束
+              </button>
+            </div>
+
+            <div className="flex-1 relative">
+              {mode === "recharge" && <RechargeMode onComplete={endSession} />}
+              {mode === "inspiration" && <InspirationMode onComplete={endSession} />}
+              {mode === "pomodoro" && <PomodoroMode duration={selectedDuration} onComplete={endSession} />}
+            </div>
+
+            {/* Inspiration Notes */}
+            <InspirationNotes onSave={saveInspiration} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Session Complete */}
+      <AnimatePresence>
+        {sessionState === "ending" && (
+          <SessionCompleteModal
+            mode={mode}
+            duration={selectedDuration}
+            inspirations={inspirations}
+            onClose={closeSession}
+          />
+        )}
+      </AnimatePresence>
     </main>
   );
 }
