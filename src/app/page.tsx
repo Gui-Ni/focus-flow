@@ -21,6 +21,9 @@ export default function Home() {
             <Link href="#pricing" className="text-gray-300 hover:text-white transition-colors">
               Pricing
             </Link>
+            <Link href="/store" className="text-gray-300 hover:text-white transition-colors">
+              Store
+            </Link>
             <Link href="/app" className="text-gray-300 hover:text-white transition-colors">
               App
             </Link>
@@ -294,6 +297,7 @@ export default function Home() {
               <ul className="space-y-2 text-gray-400">
                 <li><Link href="#features" className="hover:text-white transition-colors">Features</Link></li>
                 <li><Link href="#pricing" className="hover:text-white transition-colors">Pricing</Link></li>
+                <li><Link href="/store" className="hover:text-white transition-colors">Store</Link></li>
                 <li><Link href="/app" className="hover:text-white transition-colors">App</Link></li>
                 <li><Link href="/blog" className="hover:text-white transition-colors">Blog</Link></li>
               </ul>
