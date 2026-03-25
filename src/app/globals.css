@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #4FACFE;
+  --color-secondary: #7CC2E8;
+  --color-accent: #00D2FF;
+  --color-bg-dark: #222222;
+  --color-bg-light: #F5F5F5;
+  --color-text-dark: #1a1a1a;
+  --color-text-light: #f5f5f5;
+}
+
+@layer base {
+  body {
+    @apply antialiased;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-white/10 backdrop-blur-lg border border-white/20;
+  }
+  
+  .gradient-brand {
+    @apply bg-gradient-to-br from-brand-400 via-brand-500 to-brand-600;
+  }
+  
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-400 to-brand-600;
+  }
+}

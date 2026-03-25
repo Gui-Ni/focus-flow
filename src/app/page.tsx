@@ -1,0 +1,329 @@
+import Link from "next/link";
+
+export default function Home() {
+  return (
+    <main className="min-h-screen bg-[#0a0a0a] text-white">
+      {/* Navigation */}
+      <nav className="fixed top-0 left-0 right-0 z-50 glass">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg gradient-brand flex items-center justify-center">
+              <span className="text-lg font-bold">⚡</span>
+            </div>
+            <span className="font-bold text-xl">Focus Flow</span>
+          </div>
+          
+          <div className="hidden md:flex items-center gap-8">
+            <Link href="#features" className="text-gray-300 hover:text-white transition-colors">
+              Features
+            </Link>
+            <Link href="#pricing" className="text-gray-300 hover:text-white transition-colors">
+              Pricing
+            </Link>
+            <Link href="/app" className="text-gray-300 hover:text-white transition-colors">
+              App
+            </Link>
+            <Link href="/blog" className="text-gray-300 hover:text-white transition-colors">
+              Blog
+            </Link>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <Link href="/login" className="text-gray-300 hover:text-white transition-colors">
+              Log in
+            </Link>
+            <Link 
+              href="/signup" 
+              className="px-4 py-2 rounded-lg gradient-brand hover:opacity-90 transition-opacity font-medium"
+            >
+              Get Started
+            </Link>
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="pt-32 pb-20 px-6">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8">
+            <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+            <span className="text-sm text-gray-300">Now in Beta</span>
+          </div>
+          
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+            Enter Your
+            <span className="text-gradient block">Flow State</span>
+          </h1>
+          
+          <p className="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
+            A productivity dashboard with immersive interaction modes designed to help you 
+            achieve deep focus. Not just a timer — an experience.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link 
+              href="/app" 
+              className="px-8 py-4 rounded-xl gradient-brand text-lg font-semibold hover:opacity-90 transition-all hover:scale-105"
+            >
+              Start for Free →
+            </Link>
+            <Link 
+              href="#demo" 
+              className="px-8 py-4 rounded-xl border border-gray-700 text-lg font-medium hover:bg-white/5 transition-all"
+            >
+              Watch Demo
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Dashboard Preview */}
+      <section id="demo" className="py-20 px-6">
+        <div className="max-w-5xl mx-auto">
+          <div className="rounded-2xl overflow-hidden border border-gray-800 shadow-2xl">
+            <div className="bg-gray-900 px-4 py-3 flex items-center gap-2">
+              <div className="flex gap-2">
+                <div className="w-3 h-3 rounded-full bg-red-500" />
+                <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                <div className="w-3 h-3 rounded-full bg-green-500" />
+              </div>
+              <div className="flex-1 text-center text-gray-500 text-sm">
+                app.focusflow.com
+              </div>
+            </div>
+            <div className="bg-gradient-to-br from-[#1a1a2e] to-[#16213e] aspect-video flex items-center justify-center">
+              <div className="text-center">
+                <div className="text-8xl font-bold text-gradient mb-4">25:00</div>
+                <div className="text-gray-400">Focus Mode · Recharge</div>
+                <div className="mt-8 flex justify-center gap-4">
+                  <div className="w-16 h-16 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-2xl">
+                    🎯
+                  </div>
+                  <div className="w-16 h-16 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-2xl">
+                    💭
+                  </div>
+                  <div className="w-16 h-16 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-2xl">
+                    📝
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section id="features" className="py-20 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold mb-4">Interaction Modes</h2>
+            <p className="text-gray-400 text-lg">Choose your path to flow</p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Recharge Mode */}
+            <div className="rounded-2xl p-8 bg-gradient-to-br from-brand-500/20 to-brand-600/10 border border-brand-500/30 hover:border-brand-500/50 transition-colors group">
+              <div className="w-14 h-14 rounded-xl gradient-brand flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
+                ⚡
+              </div>
+              <h3 className="text-2xl font-bold mb-3">精神充能 Recharge</h3>
+              <p className="text-gray-400 mb-4">
+                向内收集，收束聚焦。Drag energy orbs to center, shrinking them into a focused point of light. 
+                A meditative experience for gathering your thoughts.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <span className="px-3 py-1 rounded-full text-sm bg-brand-500/20 text-brand-300">Free</span>
+                <span className="px-3 py-1 rounded-full text-sm bg-white/10 text-gray-300">Focus</span>
+                <span className="px-3 py-1 rounded-full text-sm bg-white/10 text-gray-300">Meditation</span>
+              </div>
+            </div>
+
+            {/* Inspiration Mode */}
+            <div className="rounded-2xl p-8 bg-gradient-to-br from-purple-500/20 to-pink-500/10 border border-purple-500/30 hover:border-purple-500/50 transition-colors group">
+              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
+                💫
+              </div>
+              <h3 className="text-2xl font-bold mb-3">灵感触发 Inspiration</h3>
+              <p className="text-gray-400 mb-4">
+                向外扩散，跳跃触发。Tap floating inspiration points that ripple outward, 
+                activating divergent thinking for creative breakthroughs.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <span className="px-3 py-1 rounded-full text-sm bg-purple-500/20 text-purple-300">Pro</span>
+                <span className="px-3 py-1 rounded-full text-sm bg-white/10 text-gray-300">Creative</span>
+                <span className="px-3 py-1 rounded-full text-sm bg-white/10 text-gray-300">Breakthrough</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Additional Features */}
+          <div className="grid md:grid-cols-4 gap-6 mt-12">
+            <div className="text-center p-6 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-colors">
+              <div className="text-3xl mb-3">🌎</div>
+              <h4 className="font-semibold mb-2">Beautiful Themes</h4>
+              <p className="text-gray-400 text-sm">Transport yourself to dream destinations</p>
+            </div>
+            <div className="text-center p-6 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-colors">
+              <div className="text-3xl mb-3">🔊</div>
+              <h4 className="font-semibold mb-2">Ambient Sounds</h4>
+              <p className="text-gray-400 text-sm">Layer calming soundscapes</p>
+            </div>
+            <div className="text-center p-6 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-colors">
+              <div className="text-3xl mb-3">📊</div>
+              <h4 className="font-semibold mb-4">Focus Stats</h4>
+              <p className="text-gray-400 text-sm">Track your productivity trends</p>
+            </div>
+            <div className="text-center p-6 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-colors">
+              <div className="text-3xl mb-3">✨</div>
+              <h4 className="font-semibold mb-2">Smart To-Dos</h4>
+              <p className="text-gray-400 text-sm">One priority at a time</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section id="pricing" className="py-20 px-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold mb-4">Simple Pricing</h2>
+            <p className="text-gray-400 text-lg">Start free, upgrade when you need more</p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Free Plan */}
+            <div className="rounded-2xl p-8 bg-white/5 border border-white/10">
+              <div className="text-gray-400 mb-2">Free</div>
+              <div className="text-4xl font-bold mb-1">$0</div>
+              <div className="text-gray-500 mb-8">forever</div>
+              
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-center gap-3">
+                  <span className="text-green-400">✓</span>
+                  <span>精神充能模式</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="text-green-400">✓</span>
+                  <span>Basic themes</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="text-green-400">✓</span>
+                  <span>5 ambient sounds</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="text-green-400">✓</span>
+                  <span>Basic stats</span>
+                </li>
+                <li className="flex items-center gap-3 text-gray-500">
+                  <span>✗</span>
+                  <span>灵感触发模式</span>
+                </li>
+                <li className="flex items-center gap-3 text-gray-500">
+                  <span>✗</span>
+                  <span>Premium themes</span>
+                </li>
+              </ul>
+              
+              <button className="w-full py-3 rounded-xl border border-gray-600 hover:bg-white/5 transition-colors font-medium">
+                Get Started
+              </button>
+            </div>
+
+            {/* Pro Plan */}
+            <div className="rounded-2xl p-8 bg-gradient-to-b from-brand-500/20 to-brand-600/10 border border-brand-500/30 relative">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-brand-500 text-sm font-medium">
+                Recommended
+              </div>
+              
+              <div className="text-brand-400 mb-2">Pro</div>
+              <div className="text-4xl font-bold mb-1">$9</div>
+              <div className="text-gray-500 mb-8">/ month</div>
+              
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-center gap-3">
+                  <span className="text-green-400">✓</span>
+                  <span>Everything in Free</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="text-green-400">✓</span>
+                  <span className="font-semibold text-brand-400">灵感触发模式</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="text-green-400">✓</span>
+                  <span>All premium themes</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="text-green-400">✓</span>
+                  <span>Unlimited ambient sounds</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="text-green-400">✓</span>
+                  <span>Advanced analytics</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="text-green-400">✓</span>
+                  <span>Cloud sync</span>
+                </li>
+              </ul>
+              
+              <button className="w-full py-3 rounded-xl gradient-brand font-semibold hover:opacity-90 transition-opacity">
+                Start Free Trial
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-16 px-6 border-t border-white/10">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-4 gap-12 mb-12">
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 rounded-lg gradient-brand flex items-center justify-center">
+                  <span className="text-lg font-bold">⚡</span>
+                </div>
+                <span className="font-bold text-xl">Focus Flow</span>
+              </div>
+              <p className="text-gray-400 text-sm">
+                Your flow state companion. Achieve more with immersive interaction modes.
+              </p>
+            </div>
+            
+            <div>
+              <h4 className="font-semibold mb-4">Product</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><Link href="#features" className="hover:text-white transition-colors">Features</Link></li>
+                <li><Link href="#pricing" className="hover:text-white transition-colors">Pricing</Link></li>
+                <li><Link href="/app" className="hover:text-white transition-colors">App</Link></li>
+                <li><Link href="/blog" className="hover:text-white transition-colors">Blog</Link></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="font-semibold mb-4">Company</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><a href="#" className="hover:text-white transition-colors">About</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="font-semibold mb-4">Legal</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Cookie Policy</a></li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="pt-8 border-t border-white/10 text-center text-gray-500 text-sm">
+            © 2026 Focus Flow. All rights reserved.
+          </div>
+        </div>
+      </footer>
+    </main>
+  );
+}
