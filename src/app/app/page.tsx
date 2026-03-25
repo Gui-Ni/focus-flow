@@ -292,6 +292,12 @@ export default function Dashboard() {
             <Link href="/app/stats" className="text-gray-300 hover:text-white transition-colors">
               Stats
             </Link>
+            <Link href="/store" className="text-gray-300 hover:text-white transition-colors">
+              Store
+            </Link>
+            <Link href="/blog" className="text-gray-300 hover:text-white transition-colors">
+              Blog
+            </Link>
             <Link href="/app/settings" className="text-gray-300 hover:text-white transition-colors">
               Settings
             </Link>
@@ -439,16 +445,46 @@ export default function Dashboard() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center"
+                className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-6"
               >
                 <motion.div
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  className="text-center"
+                  className="max-w-md w-full"
                 >
-                  <div className="text-6xl mb-4">✨</div>
-                  <h2 className="text-3xl font-bold mb-2">Session Complete!</h2>
-                  <p className="text-gray-400">Great work. Take a break.</p>
+                  <div className="text-center mb-6">
+                    <div className="text-6xl mb-4">✨</div>
+                    <h2 className="text-3xl font-bold mb-2">Session Complete!</h2>
+                    <p className="text-gray-400">Great work. Take a break.</p>
+                  </div>
+
+                  {/* Product Recommendation */}
+                  <Link
+                    href="/store"
+                    className="block p-4 rounded-xl bg-gradient-to-r from-brand-500/20 to-purple-500/20 border border-brand-500/30 hover:border-brand-500/50 transition-colors mb-4"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-16 h-16 rounded-xl bg-white/10 flex items-center justify-center text-3xl">
+                        📓
+                      </div>
+                      <div className="flex-1 text-left">
+                        <div className="text-xs text-brand-400 mb-1">Recommended</div>
+                        <div className="font-bold">Flow Journal</div>
+                        <div className="text-sm text-gray-400">Track your focus journey</div>
+                      </div>
+                      <div className="text-brand-400">→</div>
+                    </div>
+                  </Link>
+
+                  <button
+                    onClick={() => {
+                      setSessionState("idle");
+                      setShowModes(true);
+                    }}
+                    className="w-full py-3 rounded-xl bg-white/10 hover:bg-white/20 transition-colors font-medium"
+                  >
+                    Done
+                  </button>
                 </motion.div>
               </motion.div>
             )}
