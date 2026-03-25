@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -274,12 +275,15 @@ export default function Dashboard() {
           </div>
 
           <nav className="flex items-center gap-6">
-            <button className="text-gray-300 hover:text-white transition-colors">
+            <Link href="/app/tasks" className="text-gray-300 hover:text-white transition-colors">
+              Tasks
+            </Link>
+            <Link href="/app/stats" className="text-gray-300 hover:text-white transition-colors">
               Stats
-            </button>
-            <button className="text-gray-300 hover:text-white transition-colors">
+            </Link>
+            <Link href="/app/settings" className="text-gray-300 hover:text-white transition-colors">
               Settings
-            </button>
+            </Link>
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center overflow-hidden">
                 {user?.user_metadata?.avatar_url ? (
