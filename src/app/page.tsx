@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { motion } from "framer-motion";
 import Logo from "@/components/LogoWrapper";
 import { BrandName } from "@/components/LogoWrapper";
 import ImmersiveBackground from "@/components/ImmersiveBackground";
 import SubscribeButton from "@/components/SubscribeButton";
+import { FadeIn, HoverScale, HoverScaleInner, Pulse, PulseDot } from "@/components/AnimatedWrapper";
 
 export default function Home() {
   return (
@@ -32,10 +32,10 @@ export default function Home() {
 
       <section className="pt-32 pb-20 px-6 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
-          <motion.div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8" animate={{ opacity: [0.8, 1, 0.8] }} transition={{ duration: 3, repeat: Infinity }}>
-            <motion.div className="w-2 h-2 rounded-full bg-green-400" animate={{ opacity: [1, 0.5, 1] }} transition={{ duration: 2, repeat: Infinity }} />
+          <Pulse className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8">
+            <PulseDot />
             <span className="text-sm text-gray-300">Now in Beta</span>
-          </motion.div>
+          </Pulse>
 
           <div className="mb-8 flex justify-center">
             <Logo size="xl" />
@@ -82,9 +82,9 @@ export default function Home() {
                 <div className="text-gray-400 mb-8">Focus Mode · Recharge</div>
                 <div className="flex justify-center gap-4">
                   {["⚡", "💫", "🍅"].map((emoji, i) => (
-                    <motion.div key={emoji} whileHover={{ scale: 1.1 }} className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl ${i === 0 ? "bg-gradient-to-br from-[#68baf4]/30 to-[#7fcaea]/10 border border-[#68baf4]/50" : "bg-white/5 border border-white/20"}`}>
+                    <div key={emoji} className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl ${i === 0 ? "bg-gradient-to-br from-[#68baf4]/30 to-[#7fcaea]/10 border border-[#68baf4]/50" : "bg-white/5 border border-white/20"}`}>
                       {emoji}
-                    </motion.div>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -101,10 +101,10 @@ export default function Home() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
-            <motion.div whileHover={{ scale: 1.02 }} className="p-8 rounded-2xl bg-gradient-to-br from-[#68baf4]/20 to-transparent border border-[#68baf4]/30 hover:border-[#68baf4]/50 transition-all group">
-              <motion.div whileHover={{ scale: 1.1 }} className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#68baf4] to-[#7fcaea] flex items-center justify-center text-2xl mb-6 group-hover:shadow-lg group-hover:shadow-[#68baf4]/30">
+            <HoverScale className="p-8 rounded-2xl bg-gradient-to-br from-[#68baf4]/20 to-transparent border border-[#68baf4]/30 hover:border-[#68baf4]/50 transition-all group">
+              <HoverScaleInner className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#68baf4] to-[#7fcaea] flex items-center justify-center text-2xl mb-6 group-hover:shadow-lg group-hover:shadow-[#68baf4]/30">
                 ⚡
-              </motion.div>
+              </HoverScaleInner>
               <h3 className="text-2xl font-bold mb-3">精神充能 Recharge</h3>
               <p className="text-gray-400 mb-4">向内收集，收束聚焦。Drag energy orbs to center, shrinking them into a focused point of light. A meditative experience.</p>
               <div className="flex flex-wrap gap-2">
@@ -112,12 +112,12 @@ export default function Home() {
                 <span className="px-3 py-1 rounded-full text-sm bg-white/10 text-gray-300">Focus</span>
                 <span className="px-3 py-1 rounded-full text-sm bg-white/10 text-gray-300">Meditation</span>
               </div>
-            </motion.div>
+            </HoverScale>
 
-            <motion.div whileHover={{ scale: 1.02 }} className="p-8 rounded-2xl bg-gradient-to-br from-[#a855f7]/20 to-transparent border border-[#a855f7]/30 hover:border-[#a855f7]/50 transition-all group">
-              <motion.div whileHover={{ scale: 1.1 }} className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#a855f7] to-[#ec4899] flex items-center justify-center text-2xl mb-6 group-hover:shadow-lg group-hover:shadow-[#a855f7]/30">
+            <HoverScale className="p-8 rounded-2xl bg-gradient-to-br from-[#a855f7]/20 to-transparent border border-[#a855f7]/30 hover:border-[#a855f7]/50 transition-all group">
+              <HoverScaleInner className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#a855f7] to-[#ec4899] flex items-center justify-center text-2xl mb-6 group-hover:shadow-lg group-hover:shadow-[#a855f7]/30">
                 💫
-              </motion.div>
+              </HoverScaleInner>
               <h3 className="text-2xl font-bold mb-3">灵感触发 Inspiration</h3>
               <p className="text-gray-400 mb-4">向外扩散，跳跃触发。Tap floating inspiration points that ripple outward, activating divergent thinking for creative breakthroughs.</p>
               <div className="flex flex-wrap gap-2">
@@ -125,7 +125,7 @@ export default function Home() {
                 <span className="px-3 py-1 rounded-full text-sm bg-white/10 text-gray-300">Creative</span>
                 <span className="px-3 py-1 rounded-full text-sm bg-white/10 text-gray-300">Breakthrough</span>
               </div>
-            </motion.div>
+            </HoverScale>
           </div>
 
           <div className="grid md:grid-cols-4 gap-6 mt-12">
@@ -135,11 +135,11 @@ export default function Home() {
               { emoji: "📊", title: "Focus Stats", desc: "Track your productivity trends" },
               { emoji: "✨", title: "Smart To-Dos", desc: "One priority at a time" },
             ].map((f, i) => (
-              <motion.div key={f.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} viewport={{ once: true }} className="text-center p-6 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-colors">
+              <FadeIn key={f.title} delay={i * 0.1} className="text-center p-6 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-colors">
                 <div className="text-3xl mb-3">{f.emoji}</div>
                 <h4 className="font-semibold mb-2">{f.title}</h4>
                 <p className="text-gray-400 text-sm">{f.desc}</p>
-              </motion.div>
+              </FadeIn>
             ))}
           </div>
         </div>
