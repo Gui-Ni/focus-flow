@@ -1,17 +1,23 @@
 import Link from "next/link";
+import { motion } from "framer-motion";
+import Logo from "@/components/LogoWrapper";
+import { BrandName } from "@/components/LogoWrapper";
+import ImmersiveBackground from "@/components/ImmersiveBackground";
+import ImmersiveBackground from "@/components/ImmersiveBackground";
 import SubscribeButton from "@/components/SubscribeButton";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#0a0a0a] text-white">
+    <main className="min-h-screen bg-[#0a0a0a] text-white relative overflow-hidden">
+      {/* Immersive Background */}
+      <ImmersiveBackground />
+
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 glass">
+      <nav className="fixed top-0 left-0 right-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg gradient-brand flex items-center justify-center">
-              <span className="text-lg font-bold">⚡</span>
-            </div>
-            <span className="font-bold text-xl">Focus Flow</span>
+          <div className="flex items-center gap-3">
+            <Logo size="md" />
+            <BrandName size="lg" />
           </div>
           
           <div className="hidden md:flex items-center gap-8">
@@ -38,7 +44,7 @@ export default function Home() {
             </Link>
             <Link 
               href="/signup" 
-              className="px-4 py-2 rounded-lg gradient-brand hover:opacity-90 transition-opacity font-medium"
+              className="px-4 py-2 rounded-lg bg-gradient-to-r from-[#68baf4] to-[#7fcaea] text-white font-medium hover:opacity-90 transition-opacity"
             >
               Get Started
             </Link>
@@ -47,16 +53,27 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6">
+      <section className="pt-32 pb-20 px-6 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8">
-            <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8">
+            <motion.div 
+              className="w-2 h-2 rounded-full bg-green-400"
+              animate={{ opacity: [1, 0.5, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
             <span className="text-sm text-gray-300">Now in Beta</span>
           </div>
           
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+          {/* Big Logo */}
+          <div className="mb-8">
+            <Logo size="xl" />
+          </div>
+          
+          <h1 className="text-5xl md:text-7xl font-bold mb-6">
             Enter Your
-            <span className="text-gradient block">Flow State</span>
+            <span className="block bg-clip-text text-transparent bg-gradient-to-r from-[#68baf4] via-[#7fcaea] to-[#eaf4fd]">
+              Flow State
+            </span>
           </h1>
           
           <p className="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
@@ -67,13 +84,13 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link 
               href="/app" 
-              className="px-8 py-4 rounded-xl gradient-brand text-lg font-semibold hover:opacity-90 transition-all hover:scale-105"
+              className="px-8 py-4 rounded-xl bg-gradient-to-r from-[#68baf4] to-[#7fcaea] text-lg font-semibold hover:opacity-90 transition-all hover:scale-105"
             >
               Start for Free →
             </Link>
             <Link 
-              href="#demo" 
-              className="px-8 py-4 rounded-xl border border-gray-700 text-lg font-medium hover:bg-white/5 transition-all"
+              href="#features" 
+              className="px-8 py-4 rounded-xl border border-white/20 text-lg font-medium hover:bg-white/5 transition-all"
             >
               Watch Demo
             </Link>
@@ -82,10 +99,10 @@ export default function Home() {
       </section>
 
       {/* Dashboard Preview */}
-      <section id="demo" className="py-20 px-6">
+      <section id="demo" className="py-20 px-6 relative z-10">
         <div className="max-w-5xl mx-auto">
-          <div className="rounded-2xl overflow-hidden border border-gray-800 shadow-2xl">
-            <div className="bg-gray-900 px-4 py-3 flex items-center gap-2">
+          <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-[#68baf4]/10">
+            <div className="bg-[#111] px-4 py-3 flex items-center gap-2">
               <div className="flex gap-2">
                 <div className="w-3 h-3 rounded-full bg-red-500" />
                 <div className="w-3 h-3 rounded-full bg-yellow-500" />
@@ -95,20 +112,34 @@ export default function Home() {
                 app.focusflow.com
               </div>
             </div>
-            <div className="bg-gradient-to-br from-[#1a1a2e] to-[#16213e] aspect-video flex items-center justify-center">
-              <div className="text-center">
-                <div className="text-8xl font-bold text-gradient mb-4">25:00</div>
-                <div className="text-gray-400">Focus Mode · Recharge</div>
-                <div className="mt-8 flex justify-center gap-4">
-                  <div className="w-16 h-16 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-2xl">
-                    🎯
-                  </div>
-                  <div className="w-16 h-16 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-2xl">
-                    💭
-                  </div>
-                  <div className="w-16 h-16 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-2xl">
-                    📝
-                  </div>
+            <div className="bg-gradient-to-br from-[#0a0a1a] to-[#0a1a2a] aspect-video flex items-center justify-center relative overflow-hidden">
+              {/* Background glow */}
+              <div className="absolute w-64 h-64 rounded-full bg-[#68baf4]/20 blur-3xl" />
+              
+              <div className="text-center relative z-10">
+                <div className="text-8xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#68baf4] to-[#7fcaea] mb-4">
+                  25:00
+                </div>
+                <div className="text-gray-400 mb-8">Focus Mode · Recharge</div>
+                <div className="flex justify-center gap-4">
+                  <motion.div 
+                    whileHover={{ scale: 1.1 }}
+                    className="w-16 h-16 rounded-full bg-gradient-to-br from-[#68baf4]/30 to-[#7fcaea]/10 border border-[#68baf4]/50 flex items-center justify-center text-2xl"
+                  >
+                    ⚡
+                  </motion.div>
+                  <motion.div 
+                    whileHover={{ scale: 1.1 }}
+                    className="w-16 h-16 rounded-full bg-white/5 border border-white/20 flex items-center justify-center text-2xl"
+                  >
+                    💫
+                  </motion.div>
+                  <motion.div 
+                    whileHover={{ scale: 1.1 }}
+                    className="w-16 h-16 rounded-full bg-white/5 border border-white/20 flex items-center justify-center text-2xl"
+                  >
+                    🍅
+                  </motion.div>
                 </div>
               </div>
             </div>
@@ -117,7 +148,7 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 px-6">
+      <section id="features" className="py-20 px-6 relative z-10">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4">Interaction Modes</h2>
@@ -126,68 +157,79 @@ export default function Home() {
           
           <div className="grid md:grid-cols-2 gap-8">
             {/* Recharge Mode */}
-            <div className="rounded-2xl p-8 bg-gradient-to-br from-brand-500/20 to-brand-600/10 border border-brand-500/30 hover:border-brand-500/50 transition-colors group">
-              <div className="w-14 h-14 rounded-xl gradient-brand flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
+            <motion.div 
+              whileHover={{ scale: 1.02 }}
+              className="p-8 rounded-2xl bg-gradient-to-br from-[#68baf4]/20 to-transparent border border-[#68baf4]/30 hover:border-[#68baf4]/50 transition-all group"
+            >
+              <motion.div 
+                whileHover={{ scale: 1.1 }}
+                className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#68baf4] to-[#7fcaea] flex items-center justify-center text-2xl mb-6 group-hover:shadow-lg group-hover:shadow-[#68baf4]/30"
+              >
                 ⚡
-              </div>
+              </motion.div>
               <h3 className="text-2xl font-bold mb-3">精神充能 Recharge</h3>
               <p className="text-gray-400 mb-4">
                 向内收集，收束聚焦。Drag energy orbs to center, shrinking them into a focused point of light. 
                 A meditative experience for gathering your thoughts.
               </p>
               <div className="flex flex-wrap gap-2">
-                <span className="px-3 py-1 rounded-full text-sm bg-brand-500/20 text-brand-300">Free</span>
+                <span className="px-3 py-1 rounded-full text-sm bg-[#68baf4]/20 text-[#68baf4]">Free</span>
                 <span className="px-3 py-1 rounded-full text-sm bg-white/10 text-gray-300">Focus</span>
                 <span className="px-3 py-1 rounded-full text-sm bg-white/10 text-gray-300">Meditation</span>
               </div>
-            </div>
+            </motion.div>
 
             {/* Inspiration Mode */}
-            <div className="rounded-2xl p-8 bg-gradient-to-br from-purple-500/20 to-pink-500/10 border border-purple-500/30 hover:border-purple-500/50 transition-colors group">
-              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
+            <motion.div 
+              whileHover={{ scale: 1.02 }}
+              className="p-8 rounded-2xl bg-gradient-to-br from-[#a855f7]/20 to-transparent border border-[#a855f7]/30 hover:border-[#a855f7]/50 transition-all group"
+            >
+              <motion.div 
+                whileHover={{ scale: 1.1 }}
+                className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#a855f7] to-[#ec4899] flex items-center justify-center text-2xl mb-6 group-hover:shadow-lg group-hover:shadow-[#a855f7]/30"
+              >
                 💫
-              </div>
+              </motion.div>
               <h3 className="text-2xl font-bold mb-3">灵感触发 Inspiration</h3>
               <p className="text-gray-400 mb-4">
                 向外扩散，跳跃触发。Tap floating inspiration points that ripple outward, 
                 activating divergent thinking for creative breakthroughs.
               </p>
               <div className="flex flex-wrap gap-2">
-                <span className="px-3 py-1 rounded-full text-sm bg-purple-500/20 text-purple-300">Pro</span>
+                <span className="px-3 py-1 rounded-full text-sm bg-[#a855f7]/20 text-[#a855f7]">Pro</span>
                 <span className="px-3 py-1 rounded-full text-sm bg-white/10 text-gray-300">Creative</span>
                 <span className="px-3 py-1 rounded-full text-sm bg-white/10 text-gray-300">Breakthrough</span>
               </div>
-            </div>
+            </motion.div>
           </div>
 
           {/* Additional Features */}
           <div className="grid md:grid-cols-4 gap-6 mt-12">
-            <div className="text-center p-6 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-colors">
-              <div className="text-3xl mb-3">🌎</div>
-              <h4 className="font-semibold mb-2">Beautiful Themes</h4>
-              <p className="text-gray-400 text-sm">Transport yourself to dream destinations</p>
-            </div>
-            <div className="text-center p-6 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-colors">
-              <div className="text-3xl mb-3">🔊</div>
-              <h4 className="font-semibold mb-2">Ambient Sounds</h4>
-              <p className="text-gray-400 text-sm">Layer calming soundscapes</p>
-            </div>
-            <div className="text-center p-6 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-colors">
-              <div className="text-3xl mb-3">📊</div>
-              <h4 className="font-semibold mb-4">Focus Stats</h4>
-              <p className="text-gray-400 text-sm">Track your productivity trends</p>
-            </div>
-            <div className="text-center p-6 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-colors">
-              <div className="text-3xl mb-3">✨</div>
-              <h4 className="font-semibold mb-2">Smart To-Dos</h4>
-              <p className="text-gray-400 text-sm">One priority at a time</p>
-            </div>
+            {[
+              { emoji: "🌍", title: "Beautiful Themes", desc: "Transport yourself to dream destinations" },
+              { emoji: "🔊", title: "Ambient Sounds", desc: "Layer calming soundscapes" },
+              { emoji: "📊", title: "Focus Stats", desc: "Track your productivity trends" },
+              { emoji: "✨", title: "Smart To-Dos", desc: "One priority at a time" },
+            ].map((feature, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+                viewport={{ once: true }}
+                className="text-center p-6 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-colors"
+              >
+                <div className="text-3xl mb-3">{feature.emoji}</div>
+                <h4 className="font-semibold mb-2">{feature.title}</h4>
+                <p className="text-gray-400 text-sm">{feature.desc}</p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-20 px-6">
+      <section id="pricing" className="py-20 px-6 relative z-10">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4">Simple Pricing</h2>
@@ -202,72 +244,57 @@ export default function Home() {
               <div className="text-gray-500 mb-8">forever</div>
               
               <ul className="space-y-4 mb-8">
-                <li className="flex items-center gap-3">
-                  <span className="text-green-400">✓</span>
-                  <span>精神充能模式</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <span className="text-green-400">✓</span>
-                  <span>Basic themes</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <span className="text-green-400">✓</span>
-                  <span>5 ambient sounds</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <span className="text-green-400">✓</span>
-                  <span>Basic stats</span>
-                </li>
-                <li className="flex items-center gap-3 text-gray-500">
-                  <span>✗</span>
-                  <span>灵感触发模式</span>
-                </li>
-                <li className="flex items-center gap-3 text-gray-500">
-                  <span>✗</span>
-                  <span>Premium themes</span>
-                </li>
+                {[
+                  "精神充能模式",
+                  "Basic themes",
+                  "5 ambient sounds",
+                  "Basic stats",
+                ].map((item, i) => (
+                  <li key={i} className="flex items-center gap-3">
+                    <span className="text-green-400">✓</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+                {[
+                  "灵感触发模式",
+                  "Premium themes",
+                ].map((item, i) => (
+                  <li key={i} className="flex items-center gap-3 text-gray-500">
+                    <span>✗</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
               </ul>
               
-              <Link href="/signup" className="block w-full py-3 rounded-xl border border-gray-600 hover:bg-white/5 transition-colors font-medium text-center">
+              <Link href="/signup" className="block w-full py-3 rounded-xl border border-white/20 text-center font-medium hover:bg-white/5 transition-colors">
                 Get Started
               </Link>
             </div>
 
             {/* Pro Plan */}
-            <div className="rounded-2xl p-8 bg-gradient-to-b from-brand-500/20 to-brand-600/10 border border-brand-500/30 relative">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-brand-500 text-sm font-medium">
+            <div className="rounded-2xl p-8 bg-gradient-to-b from-[#68baf4]/20 to-transparent border border-[#68baf4]/30 relative">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-[#68baf4] to-[#7fcaea] text-sm font-medium">
                 Recommended
               </div>
               
-              <div className="text-brand-400 mb-2">Pro</div>
+              <div className="text-[#68baf4] mb-2">Pro</div>
               <div className="text-4xl font-bold mb-1">$9</div>
               <div className="text-gray-500 mb-8">/ month</div>
               
               <ul className="space-y-4 mb-8">
-                <li className="flex items-center gap-3">
-                  <span className="text-green-400">✓</span>
-                  <span>Everything in Free</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <span className="text-green-400">✓</span>
-                  <span className="font-semibold text-brand-400">灵感触发模式</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <span className="text-green-400">✓</span>
-                  <span>All premium themes</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <span className="text-green-400">✓</span>
-                  <span>Unlimited ambient sounds</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <span className="text-green-400">✓</span>
-                  <span>Advanced analytics</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <span className="text-green-400">✓</span>
-                  <span>Cloud sync</span>
-                </li>
+                {[
+                  "Everything in Free",
+                  "灵感触发模式",
+                  "All premium themes",
+                  "Unlimited ambient sounds",
+                  "Advanced analytics",
+                  "Cloud sync",
+                ].map((item, i) => (
+                  <li key={i} className="flex items-center gap-3">
+                    <span className="text-green-400">✓</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
               </ul>
               
               <SubscribeButton mode="subscribe" />
@@ -277,15 +304,12 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="py-16 px-6 border-t border-white/10">
+      <footer className="py-16 px-6 border-t border-white/10 relative z-10">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-4 gap-12 mb-12">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg gradient-brand flex items-center justify-center">
-                  <span className="text-lg font-bold">⚡</span>
-                </div>
-                <span className="font-bold text-xl">Focus Flow</span>
+                <Logo size="sm" />
               </div>
               <p className="text-gray-400 text-sm">
                 Your flow state companion. Achieve more with immersive interaction modes.

@@ -10,26 +10,23 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          50: "#e6f4ff",
-          100: "#bae0ff",
-          200: "#91caff",
-          300: "#69aeff",
-          400: "#4090ff",
-          500: "#4FACFE", // Primary
-          600: "#0070f0",
-          700: "#0056c0",
-          800: "#004090",
-          900: "#003060",
+          50: "#eaf4fd",
+          100: "#cce7f9",
+          200: "#99cff3",
+          300: "#68baf4", // Primary light
+          400: "#68baf4", // Primary
+          500: "#5ba8e8",
+          600: "#4a90d4",
+          700: "#3a78b8",
+          800: "#2a6098",
+          900: "#1a4878",
         },
-      },
-      fontFamily: {
-        sans: ["var(--font-geist-sans)", "system-ui", "sans-serif"],
-        mono: ["var(--font-geist-mono)", "monospace"],
       },
       animation: {
         "breathe": "breathe 4s ease-in-out infinite",
         "ripple": "ripple 1.5s ease-out forwards",
         "pulse-glow": "pulse-glow 2s ease-in-out infinite",
+        "float": "float 6s ease-in-out infinite",
       },
       keyframes: {
         breathe: {
@@ -41,8 +38,12 @@ const config: Config = {
           "100%": { transform: "scale(2.5)", opacity: "0" },
         },
         "pulse-glow": {
-          "0%, 100%": { boxShadow: "0 0 20px rgba(79, 172, 254, 0.3)" },
-          "50%": { boxShadow: "0 0 40px rgba(79, 172, 254, 0.6)" },
+          "0%, 100%": { boxShadow: "0 0 20px rgba(104, 186, 244, 0.3)" },
+          "50%": { boxShadow: "0 0 40px rgba(104, 186, 244, 0.6)" },
+        },
+        float: {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-20px)" },
         },
       },
     },
