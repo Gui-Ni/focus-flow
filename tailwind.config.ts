@@ -27,6 +27,10 @@ const config: Config = {
         "ripple": "ripple 1.5s ease-out forwards",
         "pulse-glow": "pulse-glow 2s ease-in-out infinite",
         "float": "float 6s ease-in-out infinite",
+        "float-slow": "float 20s ease-in-out infinite",
+        "float-slower": "float 25s ease-in-out infinite",
+        "pulse-slow": "pulse-slow 8s ease-in-out infinite",
+        "float-particle": "float-particle 10s ease-in-out infinite",
       },
       keyframes: {
         breathe: {
@@ -44,6 +48,22 @@ const config: Config = {
         float: {
           "0%, 100%": { transform: "translateY(0px)" },
           "50%": { transform: "translateY(-20px)" },
+        },
+        "float-slow": {
+          "0%, 100%": { transform: "translate(0, 0)" },
+          "50%": { transform: "translate(50px, 30px)" },
+        },
+        "float-slower": {
+          "0%, 100%": { transform: "translate(0, 0)" },
+          "50%": { transform: "translate(-50px, -30px)" },
+        },
+        "pulse-slow": {
+          "0%, 100%": { transform: "translate(-50%, -50%) scale(1)", opacity: "0.1" },
+          "50%": { transform: "translate(-50%, -50%) scale(1.2)", opacity: "0.15" },
+        },
+        "float-particle": {
+          "0%, 100%": { transform: "translate(0, 0)", opacity: "0.3" },
+          "50%": { transform: "translate(15px, -30px)", opacity: "0.6" },
         },
       },
     },

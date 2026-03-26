@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import Logo from "@/components/LogoWrapper";
 import { BrandName } from "@/components/LogoWrapper";
 import ImmersiveBackground from "@/components/ImmersiveBackground";
+import SubscribeButton from "@/components/SubscribeButton";
 import ImmersiveBackground from "@/components/ImmersiveBackground";
 import SubscribeButton from "@/components/SubscribeButton";
 
