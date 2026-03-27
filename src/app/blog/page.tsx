@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Logo from "@/components/LogoWrapper";
 
 // 博客文章数据（后期可以从数据库或CMS读取）
 const posts = [

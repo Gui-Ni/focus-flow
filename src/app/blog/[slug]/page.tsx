@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import Logo from "@/components/LogoWrapper";
 
 const posts: Record<string, {
   title: string;
