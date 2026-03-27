@@ -179,9 +179,7 @@ export default function BlogPage() {
       <nav className="fixed top-0 left-0 right-0 z-50 glass">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg gradient-brand flex items-center justify-center">
-              <span className="text-sm font-bold">⚡</span>
-            </div>
+            <Logo size="sm" animate={false} />
             <span className="font-bold">Focus Flow</span>
           </Link>
           <div className="flex items-center gap-6">
