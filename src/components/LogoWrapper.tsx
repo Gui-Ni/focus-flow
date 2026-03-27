@@ -29,11 +29,11 @@ const sizeConfig = {
     largeLeft: 14.7,
   },
   xl: {
-    boxWidth: 180,
-    largeCircle: 72,
-    mediumCircle: 52,
-    dotsRadius: 36.8,
-    largeLeft: 24,
+    boxWidth: 200, // 增大一点，更协调
+    largeCircle: 80,
+    mediumCircle: 58,
+    dotsRadius: 41,
+    largeLeft: 27,
   },
 };
 
@@ -41,11 +41,28 @@ const sizeConfig = {
 const dotAngles = [-46, -31, -16, 0, 16, 31, 46];
 const dotSizes = [3, 6, 10, 14, 10, 6, 3]; // 按照你的比例
 
-export default function Logo({ size = "md" }: { size?: LogoSize }) {
+interface LogoProps {
+  size?: LogoSize;
+  animate?: boolean; // 是否开启呼吸动画
+}
+
+export default function Logo({ size = "md", animate = true }: LogoProps) {
   const config = sizeConfig[size];
 
   // 计算中圆位置: 大圆右边缘是 largeLeft + largeCircle = 240px 原始，这里按比例保持
   const mediumLeft = config.largeLeft + config.largeCircle - 1; // 239px 原始
+
+  // 基础圆样式
+  const circleStyle = (isLarge: boolean) => ({
+    width: isLarge ? config.largeCircle : config.mediumCircle,
+    height: isLarge ? config.largeCircle : config.mediumCircle,
+    left: isLarge ? config.largeLeft : mediumLeft,
+    top: "50%",
+    marginTop: isLarge ? -config.largeCircle / 2 : -config.mediumCircle / 2,
+    background: isLarge
+      ? "linear-gradient(to right, #eaf4fd 0%, #68baf4 100%)"
+      : "linear-gradient(to right, #68baf4 0%, #eef7fc 100%)",
+  });
 
   return (
     <div
@@ -55,35 +72,35 @@ export default function Logo({ size = "md" }: { size?: LogoSize }) {
         height: config.boxWidth * (250 / 450), // 保持原始 450:250 比例
       }}
     >
-      {/* 左侧大圆 - 呼吸动画 */}
-      <motion.div
-        className="absolute rounded-full"
-        style={{
-          width: config.largeCircle,
-          height: config.largeCircle,
-          left: config.largeLeft,
-          top: "50%",
-          marginTop: -config.largeCircle / 2,
-          background: "linear-gradient(to right, #eaf4fd 0%, #68baf4 100%)",
-        }}
-        animate={{ scale: [1, 1.02, 1], opacity: [0.9, 1, 0.9] }}
-        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-      />
+      {/* 左侧大圆 - 呼吸动画（可选） */}
+      {animate ? (
+        <motion.div
+          className="absolute rounded-full"
+          style={circleStyle(true)}
+          animate={{ scale: [1, 1.02, 1], opacity: [0.9, 1, 0.9] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        />
+      ) : (
+        <div
+          className="absolute rounded-full"
+          style={circleStyle(true)}
+        />
+      )}
 
-      {/* 右侧中圆 - 呼吸动画延迟 */}
-      <motion.div
-        className="absolute rounded-full"
-        style={{
-          width: config.mediumCircle,
-          height: config.mediumCircle,
-          left: mediumLeft,
-          top: "50%",
-          marginTop: -config.mediumCircle / 2,
-          background: "linear-gradient(to right, #68baf4 0%, #eef7fc 100%)",
-        }}
-        animate={{ scale: [1, 1.03, 1], opacity: [0.9, 1, 0.9] }}
-        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-      />
+      {/* 右侧中圆 - 呼吸动画（可选） */}
+      {animate ? (
+        <motion.div
+          className="absolute rounded-full"
+          style={circleStyle(false)}
+          animate={{ scale: [1, 1.03, 1], opacity: [0.9, 1, 0.9] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+        />
+      ) : (
+        <div
+          className="absolute rounded-full"
+          style={circleStyle(false)}
+        />
+      )}
 
       {/* 7个小圆点 - 完美弧度排列 */}
       {dotSizes.map((dotSize, i) => {
@@ -96,20 +113,35 @@ export default function Logo({ size = "md" }: { size?: LogoSize }) {
         const x = centerX + Math.cos(angleRad) * config.dotsRadius;
         const y = centerY + Math.sin(angleRad) * config.dotsRadius;
 
-        return (
+        const scaledSize = dotSize * (config.boxWidth / 450);
+
+        return animate ? (
           <motion.div
             key={i}
             className="absolute rounded-full"
             style={{
-              width: dotSize * (config.boxWidth / 450), // 按比例缩放
-              height: dotSize * (config.boxWidth / 450),
-              left: x - (dotSize * (config.boxWidth / 450)) / 2,
-              top: y - (dotSize * (config.boxWidth / 450)) / 2,
+              width: scaledSize,
+              height: scaledSize,
+              left: x - scaledSize / 2,
+              top: y - scaledSize / 2,
               backgroundColor: "#7fcaea",
-              boxShadow: "0 0 0 1px #ffffff",
+              // boxShadow: "0 0 0 1px #ffffff", 去掉白边
             }}
             animate={{ scale: [1, 1.2, 1], opacity: [0.7, 1, 0.7] }}
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: i * 0.15 }}
+          />
+        ) : (
+          <div
+            key={i}
+            className="absolute rounded-full"
+            style={{
+              width: scaledSize,
+              height: scaledSize,
+              left: x - scaledSize / 2,
+              top: y - scaledSize / 2,
+              backgroundColor: "#7fcaea",
+              // 去掉白边
+            }}
           />
         );
       })}

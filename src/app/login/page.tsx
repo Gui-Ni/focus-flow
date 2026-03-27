@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import Logo from "@/components/LogoWrapper";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -79,11 +80,8 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl gradient-brand flex items-center justify-center">
-              <span className="text-2xl font-bold">⚡</span>
-            </div>
-            <span className="font-bold text-2xl text-white">Focus Flow</span>
+          <Link href="/" className="inline-flex flex-col items-center gap-3">
+            <Logo size="lg" animate={false} />
           </Link>
         </div>
 
