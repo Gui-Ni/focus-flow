@@ -501,6 +501,7 @@ function SessionCompleteModal({
 // Main Dashboard
 export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null);
+  const [isGuest, setIsGuest] = useState(false);
   const [mode, setMode] = useState<FocusMode>("recharge");
   const [sessionState, setSessionState] = useState<SessionState>("idle");
   const [isLoading, setIsLoading] = useState(true);
@@ -522,16 +523,21 @@ export default function Dashboard() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
-        router.push("/login");
+        // Guest mode - allow access without login
+        setIsGuest(true);
+        setIsLoading(false);
       } else {
         setUser(session.user);
+        setIsGuest(false);
         setIsLoading(false);
       }
     });
   }, [router, supabase]);
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
+    if (user) {
+      await supabase.auth.signOut();
+    }
     router.push("/");
   };
 
@@ -599,8 +605,8 @@ export default function Dashboard() {
     // Calculate actual duration
     const actualDuration = Math.floor((Date.now() - sessionStartTime) / 1000);
 
-    // Save to database
-    if (user) {
+    // Only save to database if user is logged in (not guest)
+    if (user && actualDuration > 0) {
       await supabase.from("focus_sessions").insert({
         user_id: user.id,
         mode: mode,
@@ -679,25 +685,38 @@ export default function Dashboard() {
             <Link href="/blog" className="text-gray-300 hover:text-white transition-colors">
               Blog
             </Link>
-            <Link href="/app/settings" className="text-gray-300 hover:text-white transition-colors">
-              Settings
-            </Link>
+            {user && (
+              <Link href="/app/settings" className="text-gray-300 hover:text-white transition-colors">
+                Settings
+              </Link>
+            )}
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center overflow-hidden">
-                {user?.user_metadata?.avatar_url ? (
-                  <img src={user.user_metadata.avatar_url} alt="" className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-sm font-bold">
-                    {user?.email?.charAt(0).toUpperCase() || "U"}
-                  </span>
-                )}
-              </div>
-              <button
-                onClick={handleSignOut}
-                className="text-sm text-gray-400 hover:text-white transition-colors"
-              >
-                Sign out
-              </button>
+              {user ? (
+                <>
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center overflow-hidden">
+                    {user?.user_metadata?.avatar_url ? (
+                      <img src={user.user_metadata.avatar_url} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-sm font-bold">
+                        {user?.email?.charAt(0).toUpperCase() || "U"}
+                      </span>
+                    )}
+                  </div>
+                  <button
+                    onClick={handleSignOut}
+                    className="text-sm text-gray-400 hover:text-white transition-colors"
+                  >
+                    Sign out
+                  </button>
+                </>
+              ) : (
+                <Link
+                  href="/login"
+                  className="text-sm px-4 py-2 rounded-lg bg-gradient-to-r from-[#68baf4] to-[#7fcaea] text-white font-medium hover:opacity-90 transition-opacity"
+                >
+                  登录保存进度
+                </Link>
+              )}
             </div>
           </nav>
         </div>
@@ -708,9 +727,12 @@ export default function Dashboard() {
           {/* Welcome */}
           <div className="text-center mb-8">
             <h1 className="text-2xl font-bold mb-2">
-              Welcome back{user?.user_metadata?.name ? `, ${user.user_metadata.name}` : ""}!
+              {isGuest ? "欢迎体验 Focus Flow" : `Welcome back${user?.user_metadata?.name ? `, ${user.user_metadata.name}` : ""}!`}
             </h1>
             <p className="text-gray-400">选择一个模式开始专注</p>
+            {isGuest && (
+              <p className="text-sm text-[#68baf4] mt-2">游客模式 · 专注数据不会被保存</p>
+            )}
           </div>
 
           {/* Mode Selection */}

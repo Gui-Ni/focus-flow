@@ -75,8 +75,8 @@ export default function Home() {
               </div>
               <div className="flex-1 text-center text-gray-500 text-sm">app.focusflow.com</div>
             </div>
-            <div className="bg-gradient-to-br from-[#0a0a1a] to-[#0a1a2a] aspect-video flex items-center justify-center relative overflow-hidden">
-              <div className="absolute w-64 h-64 rounded-full bg-[#68baf4]/20 blur-3xl" />
+            <Link href="/app" className="block bg-gradient-to-br from-[#0a0a1a] to-[#0a1a2a] aspect-video flex items-center justify-center relative overflow-hidden hover:from-[#0a1a2a] hover:to-[#0a2a3a] transition-all cursor-pointer">
+              <div className="absolute w-64 h-64 rounded-full bg-[#68baf4]/20 blur-3xl animate-pulse" />
               <div className="text-center relative z-10">
                 <div className="text-8xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#68baf4] to-[#7fcaea] mb-4">25:00</div>
                 <div className="text-gray-400 mb-8">Focus Mode · Recharge</div>
@@ -87,8 +87,9 @@ export default function Home() {
                     </div>
                   ))}
                 </div>
+                <div className="mt-6 text-[#68baf4] font-medium">👉 Click to Try Now</div>
               </div>
-            </div>
+            </Link>
           </div>
         </div>
       </section>

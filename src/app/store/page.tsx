@@ -126,7 +126,21 @@ export default function StorePage() {
   const [recommendedForYou, setRecommendedForYou] = useState<Product[]>([]);
   const supabase = createClient();
 
+  // Store is under construction - show notice
   useEffect(() => {
+    // Show coming soon banner
+  }, []);
+
+  return (
+    <main className="min-h-screen bg-[#0a0a0a] text-white relative overflow-hidden">
+      {/* Coming Soon Banner */}
+      <div className="bg-gradient-to-r from-[#68baf4]/20 to-[#a855f7]/20 border-b border-[#68baf4]/30 py-4">
+        <div className="max-w-7xl mx-auto px-6 text-center">
+          <p className="text-[#68baf4]">
+            🛒 商店筹备中 · 精选好物即将上线 · 敬请期待
+          </p>
+        </div>
+      </div>
     // 获取用户最近使用的模式
     const fetchLastMode = async () => {
       const { data: { user } } = await supabase.auth.getUser();
