@@ -6,6 +6,8 @@ import type { User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
+import Logo from "@/components/LogoWrapper";
+
 interface FocusSession {
   id: string;
   mode: "recharge" | "inspiration" | "pomodoro";
@@ -121,6 +123,57 @@ export default function StatsPage() {
     return getFilteredSessions().reduce((sum, s) => sum + (s.inspirations?.length || 0), 0);
   };
 
+  // 计算连续专注天数
+  const getStreakDays = () => {
+    const sortedSessions = [...sessions].sort((a, b) => 
+      new Date(b.completed_at).getTime() - new Date(a.completed_at).getTime()
+    );
+    
+    if (sortedSessions.length === 0) return 0;
+    
+    let streak = 0;
+    let currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+    
+    const sessionDates = new Set(
+      sortedSessions.map(s => new Date(s.completed_at).toDateString())
+    );
+    
+    while (sessionDates.has(currentDate.toDateString())) {
+      streak++;
+      currentDate.setDate(currentDate.getDate() - 1);
+    }
+    
+    return streak;
+  };
+
+  // 计算平均专注时长
+  const getAverageMinutes = () => {
+    const filtered = getFilteredSessions();
+    if (filtered.length === 0) return 0;
+    const totalSeconds = filtered.reduce((sum, s) => sum + (s.duration_seconds || s.duration_minutes * 60), 0);
+    return Math.round(totalSeconds / filtered.length / 60);
+  };
+
+  // 获取今日专注时长
+  const getTodaySeconds = () => {
+    const today = new Date().toDateString();
+    return sessions
+      .filter(s => new Date(s.completed_at).toDateString() === today)
+      .reduce((sum, s) => sum + (s.duration_seconds || s.duration_minutes * 60), 0);
+  };
+
+  // 获取本周专注天数
+  const getWeekActiveDays = () => {
+    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const days = new Set(
+      sessions
+        .filter(s => new Date(s.completed_at) >= weekAgo)
+        .map(s => new Date(s.completed_at).toDateString())
+    );
+    return days.size;
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#1a1a2e] to-[#16213e] flex items-center justify-center">
@@ -139,6 +192,10 @@ export default function StatsPage() {
   const totalSeconds = getTotalSeconds();
   const totalInspirations = getTotalInspirations();
   const filteredSessions = getFilteredSessions();
+  const streakDays = getStreakDays();
+  const averageMinutes = getAverageMinutes();
+  const todaySeconds = getTodaySeconds();
+  const weekActiveDays = getWeekActiveDays();
 
   // Get last 7 days for chart (from Monday to Sunday)
   const getLast7Days = () => {
@@ -164,11 +221,14 @@ export default function StatsPage() {
       <header className="fixed top-0 left-0 right-0 z-50 glass">
         <div className="max-w-2xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <button onClick={() => router.push("/app")} className="text-gray-400 hover:text-white">
-              ← Back
-            </button>
-            <h1 className="text-xl font-bold">专注统计</h1>
+            <Link href="/app" className="flex items-center gap-2">
+              <Logo size="sm" animate={false} />
+              <span className="font-bold">Focus Flow</span>
+            </Link>
           </div>
+          <button onClick={() => router.push("/app")} className="text-gray-400 hover:text-white">
+            ← 返回
+          </button>
         </div>
       </header>
 
@@ -188,6 +248,26 @@ export default function StatsPage() {
               {p === "day" ? "今日" : p === "week" ? "本周" : "本月"}
             </button>
           ))}
+        </div>
+
+        {/* Quick Stats Grid */}
+        <div className="grid grid-cols-2 gap-4 mb-8">
+          <div className="p-4 rounded-xl bg-white/5 border border-white/10 text-center">
+            <div className="text-3xl font-bold text-gradient">{formatTime(todaySeconds)}</div>
+            <div className="text-sm text-gray-400">今日专注</div>
+          </div>
+          <div className="p-4 rounded-xl bg-white/5 border border-white/10 text-center">
+            <div className="text-3xl font-bold text-gradient">{streakDays}</div>
+            <div className="text-sm text-gray-400">连续天数 🔥</div>
+          </div>
+          <div className="p-4 rounded-xl bg-white/5 border border-white/10 text-center">
+            <div className="text-3xl font-bold text-gradient">{averageMinutes}m</div>
+            <div className="text-sm text-gray-400">平均时长</div>
+          </div>
+          <div className="p-4 rounded-xl bg-white/5 border border-white/10 text-center">
+            <div className="text-3xl font-bold text-gradient">{weekActiveDays}/7</div>
+            <div className="text-sm text-gray-400">本周活跃</div>
+          </div>
         </div>
 
         {/* Total Time */}
