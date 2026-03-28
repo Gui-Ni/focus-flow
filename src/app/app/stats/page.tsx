@@ -28,9 +28,18 @@ export default function StatsPage() {
   const supabase = createClient();
 
   useEffect(() => {
+    // Skip if not in browser
+    if (typeof window === 'undefined') {
+      setIsLoading(false);
+      return;
+    }
+    
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
-        router.push("/login");
+        // Not logged in, redirect to login
+        if (typeof window !== 'undefined') {
+          router.push("/login");
+        }
       } else {
         setUser(session.user);
         fetchSessions(session.user.id);
@@ -187,16 +196,12 @@ export default function StatsPage() {
     return days.size;
   };
 
-  if (isLoading || error) {
+  if (isLoading || error || !sessions) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#1a1a2e] to-[#16213e] flex items-center justify-center">
         <div className="text-center">
           <Logo size="lg" animate={true} />
-          {error ? (
-            <p className="text-gray-400 mt-4">{error}</p>
-          ) : (
-            <p className="text-gray-400 mt-4">加载中...</p>
-          )}
+          <p className="text-gray-400 mt-4">{error || "加载中..."}</p>
         </div>
       </div>
     );
