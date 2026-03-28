@@ -726,9 +726,6 @@ export default function Dashboard() {
         <div className="max-w-4xl mx-auto">
           {/* Welcome */}
           <div className="text-center mb-8">
-            <div className="flex justify-center mb-4">
-              <SyncLogo size={80} isBreathing={true} />
-            </div>
             <h1 className="text-2xl font-bold mb-2">
               {isGuest ? "欢迎体验 Focus Flow" : `Welcome back${user?.user_metadata?.name ? `, ${user.user_metadata.name}` : ""}!`}
             </h1>
