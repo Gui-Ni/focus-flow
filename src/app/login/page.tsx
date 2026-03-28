@@ -15,10 +15,17 @@ export default function LoginPage() {
   const supabase = createClient();
 
   useEffect(() => {
-    // Check if already logged in
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Check if already logged in, but validate with server first
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session) {
-        router.push("/app");
+        // Validate session with server
+        const { data: { user }, error } = await supabase.auth.getUser();
+        if (user && !error) {
+          router.push("/app");
+        } else {
+          // Session invalid, clear it
+          await supabase.auth.signOut();
+        }
       }
     });
   }, [router, supabase]);
