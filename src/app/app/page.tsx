@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import type { User } from "@supabase/supabase-js";
 import Logo from "@/components/LogoWrapper";
+import { SyncLogo, EnergyBalls, InspirationRipples, AmbientGlow, useWhiteNoise } from "@/components/SyncEffects";
 
 // Types
 type FocusMode = "recharge" | "inspiration" | "pomodoro";
@@ -725,6 +726,9 @@ export default function Dashboard() {
         <div className="max-w-4xl mx-auto">
           {/* Welcome */}
           <div className="text-center mb-8">
+            <div className="flex justify-center mb-4">
+              <SyncLogo size={80} isBreathing={true} />
+            </div>
             <h1 className="text-2xl font-bold mb-2">
               {isGuest ? "欢迎体验 Focus Flow" : `Welcome back${user?.user_metadata?.name ? `, ${user.user_metadata.name}` : ""}!`}
             </h1>
@@ -843,6 +847,19 @@ export default function Dashboard() {
 
             {/* Fullscreen Button - Bottom Left */}
             <FullscreenButton />
+
+            {/* SYNC 视觉特效 */}
+            <AmbientGlow active={true} color={selectedTheme === "ocean" ? "#00D4FF" : "#4FACFE"} />
+            
+            {/* 能量球 - 精神充能模式 */}
+            {mode === "recharge" && (
+              <EnergyBalls ballCount={8} />
+            )}
+            
+            {/* 灵感涟漪 - 灵感触发模式 */}
+            {mode === "inspiration" && (
+              <InspirationRipples active={true} rippleCount={10} />
+            )}
 
             <div className="p-6 flex items-center justify-between">
               <div className="flex items-center gap-4">
