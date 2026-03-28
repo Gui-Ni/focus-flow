@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import type { User } from "@supabase/supabase-js";
+import Logo from "@/components/LogoWrapper";
 
 // Types
 type FocusMode = "recharge" | "inspiration" | "pomodoro";
@@ -664,12 +665,10 @@ export default function Dashboard() {
       <header className="fixed top-0 left-0 right-0 z-30 glass">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg gradient-brand flex items-center justify-center">
-                <span className="text-sm font-bold">⚡</span>
-              </div>
+            <Link href="/app" className="flex items-center gap-2">
+              <Logo size="sm" animate={false} />
               <span className="font-bold">Focus Flow</span>
-            </div>
+            </Link>
           </div>
 
           <nav className="flex items-center gap-6">
