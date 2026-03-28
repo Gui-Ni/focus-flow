@@ -21,6 +21,7 @@ export default function StatsPage() {
   const [sessions, setSessions] = useState<FocusSession[]>([]);
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [period, setPeriod] = useState<"day" | "week" | "month">("week");
   const [selectedSession, setSelectedSession] = useState<FocusSession | null>(null);
   const router = useRouter();
@@ -34,24 +35,36 @@ export default function StatsPage() {
         setUser(session.user);
         fetchSessions(session.user.id);
       }
+    }).catch((err) => {
+      console.error("Auth error:", err);
+      setError("请先登录");
+      setIsLoading(false);
     });
   }, [router, supabase]);
 
   const fetchSessions = async (userId: string) => {
-    const { data, error } = await supabase
-      .from("focus_sessions")
-      .select("*")
-      .eq("user_id", userId)
-      .order("completed_at", { ascending: false })
-      .limit(200);
+    try {
+      const { data, error } = await supabase
+        .from("focus_sessions")
+        .select("*")
+        .eq("user_id", userId)
+        .order("completed_at", { ascending: false })
+        .limit(200);
 
-    if (!error && data) {
-      // Convert duration_seconds to actual seconds stored
-      const sessionsWithSeconds = data.map(s => ({
-        ...s,
-        duration_seconds: s.duration_seconds || s.duration_minutes * 60
-      }));
-      setSessions(sessionsWithSeconds);
+      if (!error && data) {
+        // Convert duration_seconds to actual seconds stored
+        const sessionsWithSeconds = data.map(s => ({
+          ...s,
+          duration_seconds: s.duration_seconds || s.duration_minutes * 60
+        }));
+        setSessions(sessionsWithSeconds);
+      } else if (error) {
+        console.error("Fetch sessions error:", error);
+        setSessions([]);
+      }
+    } catch (err) {
+      console.error("Error fetching sessions:", err);
+      setSessions([]);
     }
     setIsLoading(false);
   };
@@ -174,14 +187,16 @@ export default function StatsPage() {
     return days.size;
   };
 
-  if (isLoading) {
+  if (isLoading || error) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#1a1a2e] to-[#16213e] flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 rounded-xl gradient-brand flex items-center justify-center mx-auto mb-4">
-            <span className="text-3xl font-bold">⚡</span>
-          </div>
-          <div className="text-white">Loading...</div>
+          <Logo size="lg" animate={true} />
+          {error ? (
+            <p className="text-gray-400 mt-4">{error}</p>
+          ) : (
+            <p className="text-gray-400 mt-4">加载中...</p>
+          )}
         </div>
       </div>
     );
