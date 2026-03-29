@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import type { User } from "@supabase/supabase-js";
 import Logo from "@/components/LogoWrapper";
-import { SyncLogo, EnergyBalls, InspirationRipples, AmbientGlow } from "@/components/SyncEffects";
+import { EnergyBalls, InspirationRipples, AmbientGlow } from "@/components/SyncEffects";
 
 // Types
 type FocusMode = "recharge" | "inspiration" | "pomodoro";
@@ -147,162 +147,29 @@ function ConfigModal({
   );
 }
 
-// Recharge Mode - Drag orbs to center
+// Recharge Mode - 纯计时展示，交互相全权由 EnergyBalls 覆盖层负责
 function RechargeMode({ sessionDuration }: { sessionDuration: number }) {
-  const [orbs, setOrbs] = useState<
-    Array<{ id: number; x: number; y: number; collected: boolean }>
-  >([]);
-  const [centerGlow, setCenterGlow] = useState(0);
-
-  useEffect(() => {
-    const newOrbs = Array.from({ length: 8 }, (_, i) => ({
-      id: i,
-      x: Math.random() * 280 - 140,
-      y: Math.random() * 280 - 140,
-      collected: false,
-    }));
-    setOrbs(newOrbs);
-  }, []);
-
-  const collectOrb = (id: number) => {
-    setOrbs((prev) =>
-      prev.map((orb) => (orb.id === id ? { ...orb, collected: true } : orb))
-    );
-    setCenterGlow((prev) => Math.min(prev + 12.5, 100));
-
-    setTimeout(() => {
-      setOrbs((prev) => prev.filter((orb) => orb.id !== id));
-    }, 500);
-  };
-
   const minutes = Math.floor(sessionDuration / 60);
   const seconds = sessionDuration % 60;
 
   return (
-    <div className="relative w-full h-full flex items-center justify-center">
-      {/* Timer */}
-      <div className="absolute top-20 left-1/2 -translate-x-1/2 text-4xl font-bold">
+    <div className="relative w-full h-full flex items-center justify-center pointer-events-none">
+      <div className="text-4xl font-bold text-white/40 tracking-widest">
         {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
-      </div>
-
-      <motion.div
-        className="absolute w-32 h-32 rounded-full bg-gradient-to-br from-brand-400 to-brand-600"
-        animate={{
-          scale: 1 + centerGlow * 0.01,
-          opacity: 0.3 + centerGlow * 0.005,
-        }}
-        transition={{ duration: 0.5 }}
-      />
-      <div className="absolute w-6 h-6 rounded-full bg-white shadow-lg shadow-brand-500/50" />
-
-      {orbs.map((orb) => (
-        <motion.div
-          key={orb.id}
-          className="absolute w-12 h-12 rounded-full bg-gradient-to-br from-brand-300 to-brand-500 cursor-grab active:cursor-grabbing shadow-lg shadow-brand-500/30"
-          initial={{ x: orb.x, y: orb.y }}
-          animate={{
-            x: orb.collected ? 0 : orb.x,
-            y: orb.collected ? 0 : orb.y,
-            scale: orb.collected ? 0 : 1,
-          }}
-          transition={{ duration: 0.5, ease: [0.18, 1, 0.32, 1] }}
-          onClick={() => !orb.collected && collectOrb(orb.id)}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          style={{ touchAction: "none" }}
-        />
-      ))}
-
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/60 text-sm">
-        已收集: {8 - orbs.length}/8
       </div>
     </div>
   );
 }
 
-// Inspiration Mode - Tap floating points
+// Inspiration Mode - 纯计时展示，交互相全权由 InspirationRipples 覆盖层负责
 function InspirationMode({ sessionDuration }: { sessionDuration: number }) {
-  const [points, setPoints] = useState<
-    Array<{ id: number; x: number; y: number }>
-  >([]);
-  const [ripples, setRipples] = useState<
-    Array<{ id: number; x: number; y: number }>
-  >([]);
-  const [tappedCount, setTappedCount] = useState(0);
-
-  useEffect(() => {
-    generatePoints();
-  }, []);
-
-  const generatePoints = () => {
-    const newPoints = Array.from({ length: 6 }, (_, i) => ({
-      id: Date.now() + i,
-      x: Math.random() * 200 - 100,
-      y: Math.random() * 200 - 100,
-    }));
-    setPoints(newPoints);
-  };
-
-  const tapPoint = (id: number, x: number, y: number) => {
-    setTappedCount((prev) => prev + 1);
-
-    const rippleId = Date.now();
-    setRipples((prev) => [...prev, { id: rippleId, x, y }]);
-    setTimeout(() => {
-      setRipples((prev) => prev.filter((r) => r.id !== rippleId));
-    }, 1000);
-
-    setPoints((prev) => prev.filter((p) => p.id !== id));
-    setTimeout(() => {
-      setPoints((prev) => [
-        ...prev,
-        {
-          id: Date.now(),
-          x: Math.random() * 200 - 100,
-          y: Math.random() * 200 - 100,
-        },
-      ]);
-    }, 300);
-  };
-
   const minutes = Math.floor(sessionDuration / 60);
   const seconds = sessionDuration % 60;
 
   return (
-    <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
-      {/* Timer */}
-      <div className="absolute top-20 left-1/2 -translate-x-1/2 text-4xl font-bold">
+    <div className="relative w-full h-full flex items-center justify-center pointer-events-none">
+      <div className="text-4xl font-bold text-white/40 tracking-widest">
         {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
-      </div>
-
-      {/* Ripples */}
-      {ripples.map((ripple) => (
-        <motion.div
-          key={ripple.id}
-          className="absolute w-20 h-20 rounded-full border-2 border-purple-400"
-          initial={{ x: ripple.x - 40, y: ripple.y - 40, scale: 0.5, opacity: 1 }}
-          animate={{ scale: 2.5, opacity: 0 }}
-          transition={{ duration: 1, ease: "easeOut" }}
-        />
-      ))}
-
-      {/* Points */}
-      {points.map((point) => (
-        <motion.div
-          key={point.id}
-          className="absolute w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 cursor-pointer shadow-lg shadow-purple-500/40"
-          animate={{
-            x: point.x + Math.sin(Date.now() / 1000 + point.id) * 10,
-            y: point.y + Math.cos(Date.now() / 1000 + point.id) * 10,
-          }}
-          onClick={() => tapPoint(point.id, point.x, point.y)}
-          whileHover={{ scale: 1.2 }}
-          whileTap={{ scale: 0.8 }}
-        />
-      ))}
-
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/60 text-sm">
-        已触发: {tappedCount} 个灵感点
       </div>
     </div>
   );
@@ -858,10 +725,6 @@ export default function Dashboard() {
               <InspirationRipples onRecordAction={() => {}} />
             )}
 
-            {/* 中心 Logo */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-              <SyncLogo size={80} isBreathing={true} isSyncing={mode === "inspiration"} />
-            </div>
 
             <div className="p-6 flex items-center justify-between">
               <div className="flex items-center gap-4">
