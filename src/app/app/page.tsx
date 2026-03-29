@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import type { User } from "@supabase/supabase-js";
 import Logo from "@/components/LogoWrapper";
-import { SyncLogo, EnergyBalls, InspirationRipples, AmbientGlow } from "@/components/SyncEffects";
+import { SyncLogo, EnergyBalls, InspirationRipples, AmbientGlow, BottomArcMask } from "@/components/SyncEffects";
 
 // Types
 type FocusMode = "recharge" | "inspiration" | "pomodoro";
