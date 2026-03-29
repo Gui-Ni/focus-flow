@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import type { User } from "@supabase/supabase-js";
 import Logo from "@/components/LogoWrapper";
-import { SyncLogo, EnergyBalls, InspirationRipples, AmbientGlow, BottomArcMask } from "@/components/SyncEffects";
+import { SyncLogo, EnergyBalls, InspirationRipples, AmbientGlow } from "@/components/SyncEffects";
 
 // Types
 type FocusMode = "recharge" | "inspiration" | "pomodoro";
@@ -846,17 +846,22 @@ export default function Dashboard() {
             <FullscreenButton />
 
             {/* SYNC 视觉特效 */}
-            <AmbientGlow active={true} color={selectedTheme === "ocean" ? "#00D4FF" : "#4FACFE"} />
+            <AmbientGlow active={true} />
             
             {/* 能量球 - 精神充能模式 */}
             {mode === "recharge" && (
-              <EnergyBalls ballCount={8} />
+              <EnergyBalls pushProgress={0} onRecordAction={() => {}} />
             )}
             
             {/* 灵感涟漪 - 灵感触发模式 */}
             {mode === "inspiration" && (
-              <InspirationRipples active={true} rippleCount={10} />
+              <InspirationRipples onRecordAction={() => {}} />
             )}
+
+            {/* 中心 Logo */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+              <SyncLogo size={80} isBreathing={true} isSyncing={mode === "inspiration"} />
+            </div>
 
             <div className="p-6 flex items-center justify-between">
               <div className="flex items-center gap-4">
