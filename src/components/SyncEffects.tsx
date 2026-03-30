@@ -13,7 +13,6 @@ interface EnergyBall {
   x: number;
   y: number;
   size: number;
-  hue: number;
 }
 
 interface Particle {
@@ -66,7 +65,6 @@ export function EnergyBalls({
       x: 10 + Math.random() * 80,
       y: 15 + Math.random() * 50,
       size: 52 + Math.random() * 16,
-      hue: 200 + Math.random() * 30,
     };
   }, []);
 
@@ -180,12 +178,8 @@ export function EnergyBalls({
           >
             {/* 球体 */}
             <div
-              className="w-full h-full rounded-full"
-              style={{
-                background: `linear-gradient(135deg, hsla(${ball.hue},80%,72%,0.88) 0%, hsla(${ball.hue},60%,52%,0.65) 50%, hsla(${ball.hue},80%,68%,0.25) 100%)`,
-                boxShadow: `0 0 ${ball.size * 0.5}px hsla(${ball.hue},80%,60%,0.35), inset 0 0 ${ball.size * 0.25}px rgba(255,255,255,0.25)`,
-                border: `1px solid hsla(${ball.hue},80%,82%,0.45)`,
-              }}
+              className="w-full h-full rounded-full bg-[#4FACFE]/30 backdrop-blur-md border border-[#4FACFE]/50 shadow-[0_0_20px_rgba(79,172,254,0.3)]"
+              style={{ boxShadow: `0 0 ${ball.size * 0.5}px rgba(79,172,254,0.25)` }}
             >
               {/* 高光 */}
               <div
@@ -199,16 +193,16 @@ export function EnergyBalls({
                 }}
               />
               {/* 脉冲内核 */}
-              <div
-                className="absolute rounded-full animate-ping"
+              <motion.div
+                animate={{ scale: [1, 1.3, 1], opacity: [0.6, 1, 0.6] }}
+                transition={{ duration: 1.5 + (ball.id % 2) * 0.2, repeat: Infinity }}
+                className="absolute rounded-full bg-[#4FACFE]/60 blur-[6px]"
                 style={{
                   width: ball.size * 0.35,
                   height: ball.size * 0.35,
                   top: "50%",
                   left: "50%",
                   transform: "translate(-50%, -50%)",
-                  background: `hsla(${ball.hue},80%,82%,0.35)`,
-                  animationDuration: "2.5s",
                 }}
               />
             </div>
@@ -229,8 +223,8 @@ export function EnergyBalls({
               top: p.y,
               marginLeft: -2,
               marginTop: -2,
-              background: `rgba(79,172,254,0.7)`,
-              boxShadow: "0 0 6px rgba(79,172,254,0.5)",
+              background: `#fff`,
+              boxShadow: "0 0 15px rgba(79,172,254,0.7)",
               animation: "particleFly 0.6s ease-out forwards",
             }}
           />
